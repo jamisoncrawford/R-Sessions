@@ -1,3 +1,3 @@
-# R-Sessions
+# R Sessions
 
 TBD
