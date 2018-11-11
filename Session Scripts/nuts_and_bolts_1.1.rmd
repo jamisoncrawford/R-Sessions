@@ -1,0 +1,1030 @@
+---
+title: 'Intro to R: Nuts & Bolts'
+author: "Jamison Crawford, CNYCF"
+date: "August 31, 2018"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    number_sections: true
+---
+
+**Latest Versions & Updates:** This markdown document was built using the following versions of *R* and *RStudio*:
+ 
+* R v. 3.5.1
+* RStudio v. 1.1.456
+* Document v. 1.1
+* Last Updated: 2018-09-12
+ 
+# Introduction
+
+At the time of writing, [R-bloggers](https://www.r-bloggers.com/) posted a special announcement, ["Happy Birthday R"](https://www.r-bloggers.com/happy-birthday-r/), celebrating the language's 25th anniversary since R's first milestone as an inchoate statistical software. In April of 1997, the last alpha version was released by R's creators, University of Auckland Professors and Statisticians [Ross Ihanka](https://en.wikipedia.org/wiki/Ross_Ihaka) and [Robert Gentleman](https://en.wikipedia.org/wiki/Robert_Gentleman_(statistician)). What began as a free alternative to proprietary statistical analysis software has grown into a household name on the cutting edge of data science.
+ 
+<br>
+ 
+The curious reader may benefit from the brief overview of the R language in ["What is R?"](https://www.r-project.org/about.html), from *The R Project for Statistical Computing*. Furthermore, the experienced hacker may be interested in Ihaka and Gentleman's 1996 debut treatise on the R language: ["R: A Language for Data Analysis and Graphics"](http://srv2.lemig.umontreal.ca/donnees/geo1512/IHAKA_JCGS_1996_R_concepts_implementation.pdf), from the *Journal of Computational and Graphical Statistics*.
+ 
+<br>
+ 
+Expounding the virtues of R is beyond the scope of this tutorial. However, we'll briefly touch on some important ideas throughout to better our understanding of R, as well as scripting languages in general, with the objective of approaching key concepts, terms, and practices holistically. Moreover, we'll discuss strategies for learning how to learn R, how to troubleshoot when you get stuck (and *you will get stuck*), and how to venture beyond this layperson's guide to the nuts and bolts of R.
+ 
+<br>
+ 
+# Downloading & Installing R
+ 
+**Note:** Make sure you install R *before you install RStudio*.
+ 
+<br>
+ 
+## Downloading from CRAN
+ 
+The first step to learning R is to get R. *The Comprehensive R Archive Network*, referred to colloquially as [CRAN](https://cran.r-project.org/), is a decentralized collection of websites hosted by institutions of higher learning around the world, all of which update daily to host identical content, including current and previous versions of R, thousands of R extensions - which expand the functionality of the language - and voluminous documentation. Hence, these sites are called **mirrors**. When you download R or an extension of R, *load-balancing devices* ensure that **mirrors** divvy up the work of getting R's software to your machine efficiently and safely.
+ 
+<br>
+ 
+<center>
+ 
+![*The Comprehensive R Archive Network (CRAN) is the go-to location to download base R.*](cran_img.jpg)
+ 
+</center> 
+ 
+<br>
+ 
+There are dozens of online tutorials on how to install R on your machine. I recommend Johns Hopkins biostatistician Roger Peng's video ["Installing R on Windows"](https://www.youtube.com/watch?v=LII6of-5Odw) and ["Installing R on Mac"](https://www.youtube.com/watch?v=uxuuWXU-7UQ).
+ 
+<br>
+ 
+<center>
+ 
+![*The "Base R" interface. If not for RStudio (introduced below), we'd all spend much more time here.*](base_r_img.jpg)
+
+</center>
+ 
+<br>
+ 
+## Base R: An Important Term
+
+This software is the old-school, *vanilla* suite known as **"Base R"** or, at times, **"Core R"**, which - more importantly - is a virtually ubiquitous colloquial term you'll hear *incredibly often*. You'll probably read **"base R"** several times throughout this guide, alone. Many newer users will never actually work interactively in the **"Base R Environment"**, as most users begin learning in *RStudio*, but that doesn't mean you won't be using tools and syntax which are quintessentially **Base R** in origin, and are referred to as such.
+ 
+<br>
+ 
+The discerning reader will note that **Base R** is deliberately formatted in bold, while *RStudio* is formatted in italics. Know that the former is a key vocabulary term, while the latter describes both developer software and a privately incoporated organization. For example, in everyday conversation among R users, you might here something like this:
+ 
+<br>
+ 
+>Llewellyn: "Do I need to download anything to perform the analysis?"
+ 
+>Carla Jean: "Nope, everything's written in base R."
+ 
+<br>
+ 
+*RStudio* even has a "cheat sheet" for **Base R** tools, terms, and practices. Guess what it's called? That's right, the ["Base R Cheat Sheet"](https://www.rstudio.com/wp-content/uploads/2016/05/base-r.pdf).
+ 
+<br>
+ 
+# Installing RStudio
+ 
+<br>
+ 
+## What is RStudio?
+ 
+[*RStudio*](https://www.rstudio.com/) is the go-to software for all your R needs. Seriously. It's an example of an [**Integrated Development Environment**](https://en.wikipedia.org/wiki/Integrated_development_environment), or **IDE**, and offers R users a feaure-rich platform and fairly easy-to-understand [**Graphical User Interface**](https://en.wikipedia.org/wiki/Graphical_user_interface), or **GUI**. This very guide is written in *RStudio*, it will be compiled by built-in extensions developed by the [*RStudio Team*](https://www.rstudio.com/about/), and your probably reading it on [RPubs](http://rpubs.com/), *brought to you by RStudio*.
+ 
+<br>
+ 
+It's important to understand that *RStudio* is both the name of a thriving and extraordinarily active organization in the R user community, as well as a crucial peace of software that makes practically every data analytic task far easier. There are other **IDEs** for the R language, but they pale in comparison to the power and popularity of this awe-inspiring tooling. You won't hear "RStudio" tossed haphazardly into conversation to the same extent that you'll hear **"Base R"**, but it should be assumed that most users, barring purists and masochists, are using *RStudio* for most data analytic tasks.
+ 
+<br>
+ 
+<center>
+ 
+![*The RStudio IDE provides signficantly more functionality and ease of use than the "Base R" GUI.*](rstudio_ide_img.jpg)
+
+</center>
+ 
+<br>
+ 
+## Downloading RStudio
+ 
+You can easily download the **Open Source** edition of *RStudio Desktop* from their [downloads page](https://www.rstudio.com/products/rstudio/), free of charge. Like **Base R**, *RStudio* has myriad guides for downloading and installing this powerful **IDE**. Downloading *RStudio Desktop* is much more straightforward for Windows, so feel free to let the installation wizard take the reins and simply accept the default options. For Mac OS, I'll again recommend Roger Peng's guide, ["Installing RStudio for the Mac"](https://www.youtube.com/watch?v=bM7Sfz-LADM&t=6s).
+ 
+For advanced users, there are several other operating systems that support *RStudio Desktop*, including Ubuntu and Fedora.
+ 
+<br>
+ 
+**Note:** If you happen to have an older operating system that requires older versions of either **Base R** or *RStudio*, do download those. You'll have to be aware of certain nuances which we'll mention in passing as we further explore R.
+ 
+<br>
+ 
+Inside the **R console**, you can determine whether you have the latest **Base R** and *RStudio* versions, respectively, with the following:
+ 
+```{r eval=FALSE}
+getRversion()
+RStudio.Version()
+```
+ 
+<br>
+ 
+## The RStudio IDE Interface
+ 
+Since this tutorial intends to treat concepts, techniques, and terms holistically, we'll introduce different parts of the *RStudio* **GUI** piecemeal, as needed. However, the eager learner may wish to download the ["RStudio IDE Cheat Sheet"](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf) in advance. 
+ 
+<br>
+ 
+# Scripting Over Everything
+
+>"If you think about how easy it is to have a spreadsheet open and for your cat to walk across the keyboard - you have that sinking feeling when you close a spreadsheet and it's like 'Would you like to save changes?'" (Jenny Bryan)
+ 
+The following segment describes the practice of **scripting**, what it means to be a **scripting language**, and the advantages of using, maintaining, and sharing **scripts**.
+ 
+<br>
+ 
+## What Is a Scripting Language?
+ 
+Simply put, R is a [**scripting language**](https://en.wikipedia.org/wiki/Scripting_language), meaning that it accomodates the practice of **scripting**, or writing and preserving code for individually-executable or automated data analytic tasks. Most importantly, it's a simple way to record the steps you've taken when performing any number of tasks which, unlike spreadsheets in *MS Excel* and similar spreadsheet software, make those steps both easy to modify and reproduce downstream.
+ 
+<br>
+ 
+<center>
+ 
+![*This is an empty script as seen in RStudio. Note that the script is untitled and, therefore, not yet saved.*](script_pane.jpg)
+ 
+</center>
+  
+<br>
+  
+In *RStudio*, code from your **script** is executed in the **R console**. For this reason, choosing to perform "quick and dirty" data analytic tasks without the use of a **script** is sometimes referred to as working **interactively** or **in-console**.
+ 
+<br>
+ 
+<center>
+ 
+![*The R console is where the code from your script is executed. If working interactively, you can run code directly in-console.*](console_pane.jpg)
+ 
+</center>
+ 
+<br>
+ 
+There are many notable and motivating advantages to **scripting** data analytic tasks, which are briefly discussed below, but first we'll explore how to open a new script in *RStudio*, as well as the most important character in writing clear code, the `#` operator.
+ 
+<br>
+ 
+## Opening a New Script
+ 
+In *RStudio*, you can easily open a new **script** in the upper-left menu. Simply select `File`, then `New File`, and finally, `R Script`. Alternatively, as you become better at coding, you can use the shortcut: `Ctrl + Shift + N` (Windows) and `Command + Shift + N` (Mac). 
+ 
+<br>
+ 
+<center>
+ 
+![*Opening a new script in RStudio is a simple point-and-click operation.*](file_tab.jpg)
+ 
+</center>
+ 
+<br>
+ 
+**Saving Scripts:** When saving a **script**, it's important to explicitly save the file name with the extension `.r`. When opening that file in the future, you'll hop right into *RStudio* with your **script** at the ready.
+ 
+<br>
+ 
+## Running Code
+ 
+You can run your code a few different ways, including within your **script**, **in-console** (or **interactively**), or simply point-and-click:
+
+* In your **script**, press `Ctrl + Enter` (Windows) or `Command + Enter` (Mac) to run the command where your cursor is located
+* Press the same keyboard shortcut to run several highlighted lines (highlight all lines in your **script** with `Ctrl/Command + A`)
+* Alternatively, press the `Run` button in the upper-right corner of *RStudio's* **script** panel
+* In the **console**, simply press the `Enter` key
+ 
+<br>
+ 
+Notably, when running code from your **script**, it will begin to execute in the **console**. Depending on the application and your machine, this may be instantaneous (e.g. a simple arithmetic operation), or it may take time (e.g. a machine learning algorithm).
+ 
+<br>
+ 
+<center>
+ 
+![*Here, a single command, plot(), is run from the script, simultaneously executing in the console and printing results in the base R graphics device.*](example_img.jpg)
+ 
+</center>
+ 
+<br>
+ 
+**Clearing the Console:** The **console** saves a running record of every piece of code you execute, for better or worse. If you find that the **console** gets too full, to the point of distraction, or if you simply want to work **interactively** and **in-console**, you can use the following keyboard shortcut to clear its contents: `Ctrl + L` (Windows) and `Command + L` (Mac).
+ 
+<br>
+ 
+**Pro Tip****:** As a general rule, *the less you use your mouse and/or touchpad, the better*. Using the above shortcut to clear the **console** also takes your cursor into the console (if it wasn't there, already, it is now). To hop back into your **script**, press `Ctrl/Command + 1`, and to hope back into your **console**, press `Ctrl/Command + 2`. 
+ 
+<br>
+ 
+**Advanced Knowledge:** There are several methods for **profiling** R code, or measuring the efficiency of code using units of time, generally for **optimization** purposes. These will be discussed in later tutorials. The real-world time required to completely execute one or more commands is called **elapsed time**, while the time it takes for your machine to run the same code is called **user time**. While it's possible for **user time** to exceed **elapsed time**, this requires [**parallel computing**](https://en.wikipedia.org/wiki/Parallel_computing). 
+ 
+<br>
+ 
+## Annotatation
+ 
+>"Your closest collaborator is you six months ago, but you don't reply to emails." (Karl Broman)
+
+When **scripting**, there are two significant practices to keep in mind. **Annotation**, or leaving a bread crumb trail of **comments** within your code, and **conventions**, the generally-accepted term for organizing your code. 
+ 
+<br>
+ 
+**Annotation** is easily performed with the **hashtag**, or `#` operator, and effectively prevents all **expressions** (another way to say "code") from being **evaluated** (another way to say "executed"). You can use it in a variety of ways and many R users tend to employ the `#` operator differently - and that's okay. Most importantly, however, is that it's *used consistently* in **annotation**. Use cases include:
+ 
+* Headers for different stages in an analysis
+* Recording R and *RStudio* versions and dates
+* Providing links to helpful resources
+* Documenting updates
+* Warnings, e.g. of computational expense or instability
+* Explaining code to non-R users, collaborators, and their future selves
+* Noting errors, inexplicable warnings, or where code requires additional work
+* Explaining your last train of thought before you rage quit your R session
+ 
+<br>
+ 
+<center>
+ 
+![*Can you tell what the code is doing? Err on the side over over-annotating and always annotate consistenty.*](annotate_img.jpg)
+ 
+</center>
+ 
+<br>
+ 
+## Conventions
+
+>"Any fool can write code that a computer can understand. Good programmers write code that humans can understand." (Martin Fowler)
+ 
+>"Good code is its own best documentation. As you're about to add a comment, ask yourself, 'How can I improve the code so that this comment isn't needed?'" (Steve McConnell)
+ 
+[**Coding conventions**](https://en.wikipedia.org/wiki/Coding_conventions) describe the guidelines one generally follows while writing a **script**. Many R users maintain **conventions** to which they adhere, many of which were identified from others as a promising practice to be absorbed, gradually developed independently, or deliberately taught by instructors. Many tech companies even codify their **coding conventions** for consistency across employees and more fluid collaboration. It's precisely for that reason we develop and *consistently use* **conventions**, making our code:
+ 
+* Easily decodable and intepretable 
+* Human-readable by non-R users
+* Easier to troubleshoot for errors
+* Comprehensible shorthand
+* Less verbose, but not at the expense of nuance
+ 
+<br>
+ 
+In fact, [**naming conventions**](https://en.wikipedia.org/wiki/Naming_convention_(programming)) - used in naming values, data structures, and tools in R - can even help us recognize the author of the code, kind of like a signature. When we see a tool using `leopard.case` or `period.separated`, there's a decent probability it was created by the **Base R** *Core Team*, while `snake_case` is the calling card of *RStudio* tooling, and in particular, its Chief Data Scientist, [Hadley Wickham](https://en.wikipedia.org/wiki/Hadley_Wickham).
+ 
+<br>
+ 
+**Pro Tip****:** There are a variety of **naming conventions** surrounding **case**, including [**snake case**](https://en.wikipedia.org/wiki/Snake_case), [**camel case**](https://en.wikipedia.org/wiki/Camel_case) (e.g. iPhone, FedEx), and even [**kebab case**](https://en.wikipedia.org/wiki/Letter_case#Special_case_styles). So-called **period-separated** or **leopard case** is almost exclusively used in R, so much so that it doesn't have it's owen *Wikipedia* entry. However, the curious reader may be interested in ["The State of Naming Conventions in R"](https://journal.r-project.org/archive/2012-2/RJournal_2012-2_Baaaath.pdf) (Rasmus Baath), published in *The R Journal* (2012). As a further aside, **leopard case** is a term used by [DataCamp](https://www.datacamp.com/) instructor Richie Cotton in [Object-Oriented Programming](https://www.datacamp.com/courses/object-oriented-programming-in-r-s3-and-r6), so feel feel free to use any spotted animal, that's the beauty of **Open Source**. *Dalmation case*, anyone? 
+ 
+<br>
+ 
+**Conventions Using RStudio Options:** *RStudio* has a host of options for modifying your **scripting** to automatically adhere to your style and **conventions**. In the upper-right menu, simply click on `Tools` and `Global Options...`, then select the `Code` tab in the newly-opened browser. You're able to:
+
+* Adjust the size of automatic indentation
+* Toggle matching parentheses and brackets
+* Toggle automatic vertical alignment
+* Create a guiding margin to limit code length
+* Automatically insert spacing around `=`
+ 
+<br>
+ 
+Hadley Wickham of *RStudio* mentions two personal **conventions** he explicitly recommends in a course co-taught with his sister, Oregan State Univeristy Professor [Charlotte Wickham](http://www.cwick.co.nz/), called [Writing Functions in R](https://www.datacamp.com/courses/writing-functions-in-r):
+ 
+* Surround all `=` operators with one space on both sides
+* When using commas, `,`, do not precede with a space, but follow with one
+ 
+That may seem simple enough, but compare these tips to the throughly codified **conventions** of [Google's R Style Guide](https://google.github.io/styleguide/Rguide.xml) for comparison and inspiration. 
+ 
+<br>
+ 
+**Conclusions:** The reader should make her or his own choices regarding **conventions**, but always keep your audience in mind when you write code, even if that audience is you, six months from now. Remember, above all else, the most important aspect of **conventions** is that they are *used consistently*.
+
+<br>
+ 
+<center>
+ 
+![*Don't be that guy. Source: [XKCD](https://xkcd.com/1513/).*](https://imgs.xkcd.com/comics/code_quality.png)
+ 
+</center>
+ 
+<br>
+ 
+## Why Script?
+
+The advantages of **scripting** your data analytic tasks are many. The only major disadvantage pf learning a **scripted language** is that you have to learn it. Even the ostensible disadvantage of communicating via **scripts** with non-users may be overcome by tooling, media, and other data products à la [RPubs](http://rpubs.com/), [R Markdown](https://rmarkdown.rstudio.com/), and [Shiny](https://shiny.rstudio.com/). Even the present tutorial has been entirely scripted using [**literate programming**](https://en.wikipedia.org/wiki/Literate_programming), i.e. using a naturally flowing combination of human- and machine-readable language. The following are just a few of the motivating factors:
+ 
+* Creating and sharing [**reproducible research**](https://en.wikipedia.org/wiki/Reproducibility#Reproducible_research)
+* Necessarily developing a deeper understanding of your data
+* Documenting every step in the data analysis pipeline
+* Using [**version control**](https://en.wikipedia.org/wiki/Version_control) systems to avoid catastrophe
+* Performing sophisticated tasks impossible in spreadsheets
+* Efficiently working with massive datasets
+* Automating complex tasks, e.g. generating reports
+* Reviewing analyses on FERPA- and HIPAA-protected data
+* Creating savvy, interactive applications for broad audiences
+* Minimizing human error in data integrity and analysis
+* Mitigate **spreadsheet risk**
+ 
+<br>
+ 
+<center>
+ 
+![*We've all ran into one of these at some point. Source: [XKCD](https://xkcd.com/1667/)*](algorithms_img.png)
+ 
+</center>
+ 
+<br>
+ 
+The latest version of *MS Office* now has a **version control** system, as does *Google Sheets*, which don't necessarily prevent disaster, but they can help you restore previous versions of your work. The last two items on that list are big ones, though, and the following briefly touches on examples of human error introduced by working with data sans **scripting**.
+ 
+<br>
+ 
+### Spreadsheet Risk
+ 
+[**"Spreadsheet Risk"**](https://en.wikipedia.org/wiki/Spreadsheet#Spreadsheet_risk) is one of the more pernicious culprits in misleading data analyses due to both the ease in which mistakes are made and the difficulty in double-checking your output. Whether it's *Microsoft Excel's* automatic date formatting, or simply manually dragging your range one cell too far. **Scripting languages** do not typically allow users to manually, interactively manipulate data, which is a process so error-prone that it affects finances, human health, and public policy in significant and, at times, awesome ways. 
+ 
+<br>
+ 
+<center>
+ 
+![*Even the most sophisticated spreadsheets cannot defend against stupidity. Source: ["Dilbert" (Scott Adams)](http://dilbert.com/strip/2007-08-08)*](http://assets.amuniversal.com/60f688006cc901301d50001dd8b71c47)
+ 
+</center>
+ 
+<br>
+ 
+**Reducing Financial Risks:** Private sector organization *Fidelity Investments* suffered a [net capital loss of $1.3 billion](https://www.washingtonpost.com/archive/politics/1995/01/05/an-accountants-nightmare-13-billion-plus-or-minus/0b072038-612e-4a85-8889-57db77434d03/?noredirect=on&utm_term=.3838059a2a7f) due to an omitted minus sign (`-`). There are a number of outrageous stories on spreadsheet-related data analytic errors and the curious reader is encouraged to use their search engine of choice.
+ 
+<br>
+ 
+**Reducing Health Risks:** Money isn't the only factor and human error from manual data analytic tasks aren't exclusive to the private sector. A 2016 study of 3,567 genomics publications, ["Gene name errors are widespread in the scientific literature"](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-1044-7) (Ziemann et al.), found that 704 publications (~20%) contained *MS Excel*-related errors. For example, gene codes like "SEPT2", for "Septin 2", were automatically converted to "September 2", common mistakes [identified in academic papers as early as 2004](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-5-80). Errors are carried downstream through analysis to clinical trials. In one of the most  notorious cases, a 2006 publication in *The Nature Medicine Paper*, ["Genomic signatures to guide the use of chemotherapeutics"](https://www.ncbi.nlm.nih.gov/pubmed/17057710) were implemented in multiple clinical trials at Duke University, despite an entire column being accidentally shifted one row down in *MS Excel* - "once these errors were corrected", states a post-mortem in *Biomedical Computation Review*, "the impressive predictions disappearred" ([Sainani, 2011](http://biomedicalcomputationreview.org/content/error-%E2%80%93-what-biomedical-computing-can-learn-its-mistakes)).
+ 
+<br>
+ 
+**Reducing Public Policy Risks:** One of the more pertinent examples for social sector analysts includes Reinhart and Rogoff's ["Growth in a Time of Debt"](https://en.wikipedia.org/wiki/Growth_in_a_Time_of_Debt), which is the only empirical evidence cited in the Republican Party's 2013 budget proposal, ["The Path to Prosperity"](https://en.wikipedia.org/wiki/The_Path_to_Prosperity), referred to informally as the "Paul Ryan Budget". Herndon et al. authored a [critique of Reinhart and Rogoff's methodology in 2013](https://www.peri.umass.edu/fileadmin/pdf/working_papers/working_papers_301-350/WP322.pdf) which succicntly summarizes its influence on public policy:
+
+>"[Reinhart and Rogoff] have clearly exerted a major influence in recent years on public policy debates over the management of government debt and fiscal policy more broadly. Their findings have provided significant support for the austerity agenda that has been ascendant in Europe and the United States since 2010." (Herndon, et al.)
+ 
+<br>
+ 
+<center>
+ 
+![*Hyperbole? Yes. Instructional? You bet. Source: [XKCD](https://xkcd.com/327/)*](https://imgs.xkcd.com/comics/exploits_of_a_mom.png)
+ 
+</center>
+ 
+<br>
+ 
+### Inevitability of Spreadsheets
+ 
+Spreadsheets are likely used in the vast majority of data analyses and aren't going away. In fact, many R users work on teams with analysts that use spreadsheet software, others have clients that insist on deliverables using spreadsheet software, and still others will collaborate with organizations built on the rows and columns of spreadsheets. I've no intention to bash spreadsheets. What I encourage, however, is performing data analytic tasks in the most risk-averse manner possible, which often goes hand-in-hand with **reproducible research** practices, **version control**, which allows the use of **versioning** to update new **scripts** or revisit older ones, and other practices more often seen in **scripting langauges**.
+ 
+<br>
+ 
+It should be duly noted that **scripting** is *not infallible*, nor can it defend against data illiterate decision-makers or upstream preprocessing error. If possible, obtain data in its rawest, or *least preprocessed* state, then begin documenting (i.e. **scripting**). As social sector analysts, the argument may be made that it's both our duty and, I believe, a universally-acceptable moral imperative to mitigate such risks, and **scripting languages** like R, Python, and Julia are currently the best tooling we have available.
+ 
+<br>
+ 
+<center>
+ 
+![*One of the more terrifying questions you could be asked. Source: ["Dilbert" (Scott Adams)](http://dilbert.com/strip/2016-01-06)*](http://assets.amuniversal.com/7da0d830870a01332a13005056a9545d)
+ 
+</center>
+ 
+<br>
+ 
+**An Interesting Listen:** In their podcast, *Not So Standard Deviations*, Johns Hopkins Professor and Statistician Roger Peng and *Stitch Fix* Data Scientist Hilary Parker have a well-balanced discussion on the **scripting** versus spreadsheets debate with special guest, Jenny Bryan, a Software Engineer at *RStudio* and Professor at University of British Columbia, called ["Spreadsheet Drama"](http://nssdeviations.com/episode-9-spreadsheet-drama). Notably, Peng is an instructor for the majority of [Coursera's 10-Course Data Science Specialization](https://www.coursera.org/specializations/jhu-data-science) and Bryan is the prolific creator of [*Stat 545*](http://stat545.com/), likely one of the best online resources for learning the R language.
+ 
+<br>
+ 
+# Learning How to Learn R
+ 
+> "I make a Shiny app about every six months, in which I have to relearn everything each time. And I think it takes me less time, each time!" (Jenny Bryan)
+ 
+<br>
+
+Barring the unforeseeable and highly unlikely event that R becomes a [dead language](https://en.wikipedia.org/wiki/Timeline_of_programming_languages), you are never going to learn everything there is to know about R. Like any discipline, the more you learn, the more you'll realize how little you know, which like any good learning experience, is as humbling as it is motivating. Even the prolific creator of [*Stat 545*](http://stat545.com/), Dr. Jenny Bryan, has to relearn one of *RStudio's* most popular extensions, *Shiny*, every six months.
+ 
+<br>
+ 
+**A Threefold Typology:** I found Bryan's quote above to be particularly motivating for the aspiring R user, and an excellent encapsulation to learning how to learn R. During my foray into the R language, my *Data-Driven Management* professor, [Dr. Jesse Lecy](http://www.lecy.info/), provided a pithy, tripartite classification of R users. I've exercised some creative license in the naming. In sum:
+
+1. **The Sampler:** The user that dips her or his toes in R but ultimately decides R, or **scripting languages** in general, just aren't for them;
+2. **The Dabbler:** The user that learns just enough R that she or he is able to accomplish a range of tasks necessary for their day-to-day, but don't go beyond basic functionality and extensions;
+3. **The Deep-Diver:** The user that goes above and beyond the R functionality of R, boldly expanding their acumen as the sophistication of their needs increases.
+ 
+<br>
+ 
+**Where You Want to Be:** The intention of this introductory series is to land you, the reader, somewhere around (2), *The Dabbler*, but it's important to understand and remember, especially during your more trying bouts in R, that as you learn core functionality, you may wish to become more fluent in a particular process, e.g. **data manipulaton**, and so you download an extension, read a bit of documentation, and gradually shift into (3), *The Deep-Diver*. It's not especially uncommon to float between these two user personas, shoring up your knowledge on occasion, and expanding it when the need presents itself. Much like Dr. Bryan's opening quote, even after years of practicing with a particular set of tools, you'll need refreshers, and *that's okay*. Like Bryan, you'll still need to look back at your notes on occasion, but each time, you get a little more exposure, a little more practice, and relearning things only becomes easier.
+
+<br>
+ 
+<center>
+ 
+![*It's good to be around here on the spectrum. Source: [XKCD](https://xkcd.com/1671/)*](https://imgs.xkcd.com/comics/arcane_bullshit.png)
+ 
+</center>
+ 
+<br>
+ 
+**Historical Motivations:** In fact, the R language is most often defined as an "implementation" of [**S**](https://en.wikipedia.org/wiki/S_(programming_language)), a statistical programming language developed by [John Chambers](https://en.wikipedia.org/wiki/John_Chambers_(statistician)) et al. under the auspices of [*Bell Laboratories*](https://en.wikipedia.org/wiki/Bell_Labs) (*AT&T*) in 1976. That's right, *you're attempting to study a 25-year-old programming language built on the back of a 42-year-old programming language*. R creators [Ross Ihaka](https://en.wikipedia.org/wiki/Ross_Ihaka) and [Robert Gentleman](https://en.wikipedia.org/wiki/Robert_Gentleman_(statistician)) designed R to have syntax similar to **S**, though its underlying semantics were that of another language, [*Scheme*](https://en.wikipedia.org/wiki/Scheme_(programming_language)). Other devices found in **S** were selected for efficiency in the newly-released version of R in 1997. 
+ 
+In understanding the philosophy of **S** as intended by principal author John Chambers, we're better able to understand the philosophical underpinnings of R. In his "Stages in the Evolution of S", Chambers discusses this guiding philosophy when **S3** was deployed. Recall that **S** was developed to make data analysis more efficient and intuitive:
+
+> "We wanted users to be able to be in in an interactive environment, where they did not consciously think of themselves as programming. Then as their needs became clearer and their sophistication increases, they should be able to slide gradually into programming, when the language and system aspects would become more important." (John Chambers)
+ 
+You can find a brief history on **S** from principal author John Chambers in a broader, R-related framework and the benefits of **Open Source** software. [View the interview](https://www.youtube.com/watch?time_continue=135&v=jk9S3RTAl38).
+ 
+<br>
+ 
+**Contemporary Motivations:** *RStudio's* Chief Data Scientist, [Hadley Wickham](http://hadley.nz/), often discusses the philosophy of an ecosystem of extensions, created predominantly by Wickham and now maintainted by *RStudio*, called the [**Tidyverse**](https://www.tidyverse.org/). We'll learn more about the **Tidyverse** in time, but for now, know that it's a powerful collection of R extensions that work relatively seamlessly with each other, and is a household name among industry practitioners and academics, alike. Here, Wickham describes the philosophy of **Tidyverse** as being an extension of the philosophy of [Unix](https://en.wikipedia.org/wiki/Unix).
+ 
+> "A lot of the Tidyverse ideas are inspired by the Unix philosophy, which is kind of like small pieces that you can understand easily in isolation and if you want to solve something more complicated, you join together those simple pieces." (Hadley Wickham)
+ 
+<br>
+ 
+**Takeaway:** While this introduction intends to treat the nuts and bolts of R holistically, it's simply comprised of the building blocks and a broader framework in which they fit. Once anyone has a grasp on these fundamentals, they may begin their transition from *The Sampler* to *The Dabbler* and, at that point, the philosophies of **S**, Unix, the **Tidyverse**, and R, itself, are designed to allow users to expand their abilities on a function-by-function basis. You'll face competing but viable solutions, like **Base R** and the **Tidyverse**, and you'll often have to refresh yourself from time to time. There's nothing shameful about coding with your preferred search engine open for quick troubleshooting, it will often be your most valuable resource.
+ 
+<br>
+  
+## A Data Science Framework
+
+The earlier one recognizes where so-called **hacking** skills like learning a **scripting language** is *one* component of **data science** - a still fuzzily-defined, emerging field in which universities are scrambling to piece together core curricula to produce the [sexiest professionals of the 21st Century](https://hbr.org/2012/10/data-scientist-the-sexiest-job-of-the-21st-century) - the better. Defining this interdisciplinary craft is outside the scope of this tutorial, but it's important to understand where **hacking** skills stand within it.
+ 
+<br>
+ 
+**The Pillars of Data Science:** The mark of a consultant is the over-usage of [Venn diagrams](https://en.wikipedia.org/wiki/Venn_diagram), *especially* Venn diagrams that she or he did not actually make. However, for the purposes of simplicity, we'll use the Venn diagram that sparked the [mother of all Venn diagram wars](http://www.prooffreader.com/2016/09/battle-of-data-science-venn-diagrams.html), Drew Conway's ["Data Science Venn Diagram"](http://drewconway.com/zia/2013/3/26/the-data-science-venn-diagram), created in 2010 and entering national currency in 2013. Notably, the Venn diagram lists the three principal pillars of **data science**. To wit:
+ 
+1. Domain Expertise
+2. Hacking Skills
+3. Math & Statistics Knowledge
+ 
+<br>
+ 
+<center>
+ 
+![*Drew Conway's "Data Science Venn Diagram", which treats "hacking skills" as a component of a larger framework.*](venn_diagram_img.png)
+ 
+</center>
+ 
+<br>
+
+### Domain Expertise
+
+Excellent news. If you're a social sector professional, whether mid-career or just starting out, there's a good chance you've already gotten a decent handle on one of these pillars, i.e. "Domain Expertise". In fact, it's entirely possible that domain expertise and curiosity provoked your pursuit of data analytic acument. Regardless, it's an important reminder that even a veteran **data scientist**, replete with **hacking** skills and formal statistical training, cannot learn overnight what you already know. It's domain expertise that enables the **data scientist** to:
+
+* Know the stakeholders and best sources for data, whether quantitative or qualitative
+* Understand nuances to data that might otherwise throw a wrench in analyses downstream
+* Be familiar with the boots-on-the-ground processes that generates or collects your data
+* Have a working knowledge of the **preprocessing** of raw data before it arrives
+ 
+<br>
+ 
+### Hacking Skills 
+
+Computer literacy, and more specifcally, **data literacy**, are integral components to **data science**. Presumably, you're here to learn R which, along with *Python*, *Julia*, and a few other **scripting languages**, is the preeminent statistical language for **data scientists**. Even with **hacking** acumen, however, one would be hard-pressed to analyze data in an informed and accurate process without "Domain Expertise" or even a rudimentary knowledge of "Math & Statistics". **Hacking**, therefore, is one's familiarity with tooling and **scripting languages** to pull, clean, manipulate, visualize, and report data analysis findings. You can make a neat interactive map or some beautiful **data visualization**, but sans the other components, it's difficult to say how successful those may turn out.
+ 
+<br>
+ 
+<center>
+ 
+![*Without domain experience or some basic knowledge of statistics, you can still make pretty pictures. Source: [XKCD](https://xkcd.com/688/)*](https://imgs.xkcd.com/comics/self_description.png)
+ 
+</center>
+ 
+<br>
+ 
+### Math & Statistics Knowledge
+
+"Math and Statistics Knowledge" is one of the less appreciated aspects of fledgling **data scientists**, especially those with little previous exposure to statistics. It's also something that's largely avoidable if you're just pulling descriptive statistics and other basic tasks, however, statistics becomes increasingly important as your data analytic style evolves. Unless you're jumping into R with a decent background in statistics, you likely aren't going to immediately learn, or care to learn its vast array of statistical functionality. 
+ 
+However, this is often the case for new learners. Why? Typically, an R user will first learn how to **process** their data before analyzing it, as there's no good coming out of analyzing dirty data. Gradually, however, the aspiring **data scientist** learns the basics of probability, then distributions, then regression models, and before they know it, they're creating predictive algorithms for [**machine learning**](https://en.wikipedia.org/wiki/Machine_learning). (*Results may very*). Most importantly, "domain expertise" and "hacking skills" does not necessarily equate to good analysis.
+ 
+<br>
+ 
+<center>
+ 
+![*Domain expertise and hacking skills do not guarantee you'd be a good data analyst. Source: [XKCD](https://xkcd.com/1138/)*](https://imgs.xkcd.com/comics/heatmap.png)
+ 
+</center>
+ 
+<br>
+ 
+### Conclusions
+
+**Hacking** skills. That's where learning a **scripting language** fits into the broader **data science** framework. No analyst operates on one or two pillars alone, even if it takes a team. Importantly, as your **hacking** improves, so will your understanding of "Math and Statistics Knowledge" as we gradually delve into key data analytic practices. As you work in your day-to-day, you'll begin questioning the methodology for a particular study, you'll want to know the margin of error for some findings that roll across your machine, and with time, you'll see that all three pillars reinforce one another.
+ 
+## Best Practices
+ 
+Coming soon.
+ 
+<br>
+ 
+## Learning Resources
+ 
+Coming soon.
+ 
+<br>
+ 
+## Getting Out of a Jackpot
+
+> "It's all talk until the code runs." (Ward Cunningham)
+ 
+You're going to get stuck in R, whether you simply can't find an adequate method to manipulate your data, or you've entered some command were met with a **warning** or **error message**. This is *extremely common* and happens to even the most experienced R users. Before going further, it's important to understand the difference between a **warning message** and an **error message**.
+
+A **warning message** signals to the user that code has been successfully exectuted, however there were some unanticipated results during execution. In other words, you're code works, but something happened that R didn't expect, and it's letting you know as a courtesy. **Function** `warnings()`, without any inputs, will produce a list of all warnings, even if there are several.
+ 
+An **error message** signals to the user that code has not successfully executed due to some fatal error in the code itself. They are different from **warning messages** in that rather than signaling something unexpected has occurred, they signal that nothing has occurred.
+ 
+Both **warning messages** and **error messages** may be quite terse. Well-written **functions** tend to be more "opinionated" in their messaging. For example, many **Tidyverse functions** produce messages that offer helpful advice to resolve coding errors.
+ 
+<br>
+ 
+### Understanding the Issue
+ 
+In his course, [*The R Programming Environment*](https://www.coursera.org/learn/r-programming-environment/supplement/yhVjw/diagnosing-problems), Biostatistician and Assistant Professor [Roger Peng](https://www.jhsph.edu/faculty/directory/profile/1549/roger-d-peng) succinctly notes the two criteria which must be satisfied to recognize that an error has indeed occurred:
+ 
+1. "You had a certain expectation for what was supposed to happen"
+2. "Something *other* than that expectation actually happened"
+
+While this may seem tongue-in-cheek, Peng notes that many users emphasize the latter without giving due consideration to the former. "While it's important to recognize these warning signs," he notes, "it's equally important to be able to say specifically what your expectation was".
+
+<br>
+ 
+**Recurring Themes:** This emphasis on returning to - even refining - your original questions, intentions, and hypotheses will be a recurring theme throughout your career. Don't think that going back to the drawing board is a step back: *Getting down to the right question(s) is crucial to successful data analytic tasks*. 
+
+<br>
+
+### Built-In Help
+ 
+All **Base R** functions and many extensions, especially **Tidyverse** extensions, must undergo a rigorous process to *officially* publish their extensions on then **Comprehensive R Archive Network (CRAN)**. Having published so many extensions for R, Hadley Wickham created an [entire guide](http://r-pkgs.had.co.nz/release.html#cran-policies) to submitting extensions to **CRAN**. **CRAN** has [extremely strict policies](https://cran.r-project.org/web/packages/policies.html) regarding what extensions they maintain - for myriad but justified reasons.
+
+<br>
+ 
+**Command Documentation:** Chief among **CRAN** submission requirements are documentation and sample code, both for commands and datasets, which are often included in extensions as well as being built into *RStudio*.
+ 
+For example, take the command, or **function** `min()`, which returns the minimum value in a data structure. We'll learn more about **functions** later in this introduction, but for now, we'll create a data structure with several values using the concatenate **function** `c()`, and we'll extract the minimum value using `min()`.
+
+```{r cache = TRUE}
+numbers <- c(3, 7, 7, 8, 15)
+min(numbers)
+```
+ 
+Here, we can clearly see that the data structure (`numbers`) has a minimum value of `r min(numbers)`, and **function** `min()` confirms this. However, what if we'd like to know more about the **function** `min()`, itself? It's a **Base R** function, so should have ample documentation, right?
+
+<br>
+
+In *RStudio*, you can take the **bare function name** of `min()`, or `min` without parantheses, and either use **function** `help()` or the `?` **operator**.
+ 
+```{r eval = FALSE}
+?min
+help(min)
+```
+ 
+Both commands have the same result, opening **documentation** for `min()` in the "Help" tab, located in the lower-right corner of the *RStudio* **GUI**. Here, you can often find a **function's**:
+ 
+* Name
+* Description
+* Use Cases
+* **Arguments** (Customizable Parameters)
+* Details
+* See Also (Other **Functions**)
+* References
+* Examples
+ 
+<br>
+ 
+<center>
+ 
+![*The "Help" tab in RStudio resides in the lower-right corner and may be viewed while coding.*](help_img.jpg)
+ 
+</center>
+ 
+<br>
+ 
+**Dataset Documentation:** Similar to **function documentation**, built-in datasets and datasets available in approved extensions may also have **documentation** that's retrievable with either `help()` or the `?` **operator**. For example, *RStudio* features the built-in dataset `mtcars`, a dataset on 32 vehicles published in the 1974 issue of *Motor Trend*. 
+ 
+```{r eval = FALSE}
+?mtcars
+help(mtcars)
+```
+ 
+The **documentation** for datasets have some similarities, but the most important difference is "Format", which helps users better understand the dataset's variables, units of measurement, labels, etc.
+
+<br>
+ 
+<center>
+ 
+![*Built-in datasets contain documentation with valuable metadata.*](help_mtcars_img.jpg)
+ 
+</center>
+ 
+<br>
+
+### External Dataset Documentation
+
+In so-called "real world" data, **documentation** may be scarce, if it exists at all, and may require considerable effort on the part of the researcher to gather **metadata**, such as variable definitions, experimental design, etc. There are many exceptions, however. For example, Syracuse's [Innovation Team](http://www.innovatesyracuse.com/) maintains extraordinarily meticulous documentation on their **Open Data** platform, [DataCuse](http://data.syrgov.net/). Even independent researchers provide **metadata** in "README" files and **code books**, as seen in the work-in-progress "Syracuse Crime Analysis" [**code book**](https://github.com/jamisoncrawford/Syracuse-Crime-Analysis/blob/master/CodeBook.md). The "Syracuse Crime Analysis" is an example of a [GitHub](https://github.com/) **repository**, a popular online platform for collaborative coding and **version control**.
+ 
+<br>
+ 
+<center>
+ 
+![*Unlike some Open Data platforms, [DataCuse](http://data.syrgov.net/) maintains laudably meticulous documentation for each dataset they release.*](datacuse_img.jpg)
+ 
+</center>
+ 
+<br>
+ 
+**Reproducibility:** Dataset **documentation** is a crucial component of **reproducible research**, a "silver standard" compared to the "gold standard" of **replicable research**, an increasingly important practice in academic, scientific, and other communities that publish peer-reviewed research. Essentially, **reproducible research** provides the **raw data**, **documentation**, and **scripting** which allows others to both reproduce an analysis as well as reproduce the same findings.
+
+You can read more about **reproducible research** in Roger Peng's ["Report Writing for Data Science in R"](https://leanpub.com/reportwriting), available for free on [Leanpub](https://leanpub.com/). 
+ 
+<br>
+ 
+**Takeaway:** If available, **documentation** can be extremely valuable in overcoming coding challenges as well as understanding nuances of a dataset that can prevent challenges from ever occurring. However, valuable documentation is often the exception rather than the rule. When analysts and data scientists collect data themselves, e.g. scraping product reviews from a commercial website, they must provide their own **documentation**, not only for internal use as a touchstone throughout an analysis, but as a crucial component to **reproducibility**. Know that one may *almost* always rely on **function documentation**, retrievable with either `help()` or the `?` **operator** in *RStudio*.
+ 
+<br>
+
+### External Function Documentation
+ 
+> "Reading the documentation pages is always a boring task." (Yihui Xie)
+ 
+External **documentation** can provide even more insight into understanding **functions** or datasets, and you can typically find them in a quick online search. Be sure to include the **function** name, as well as other important terms, like "**documentation**" and "r". That last term is important, lest you pull up pages for *Python* or some other language.
+ 
+You can find the official R **documentation** for **function** `min()` at ["Maxima and Minima"](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Extremes.html), hosted by *ETH Zurich*, a university in Zürich, Switzerland.
+ 
+<br>
+ 
+<center>
+ 
+![*Both the online and built-in documentation for function `min()` is the same, but documentation comes in many forms.*](external_doc_img.jpg)
+ 
+</center>
+ 
+<br>
+ 
+### Vignettes
+
+> "A vignette is like a book chapter or an academic paper: It can describe the problem that your package is designed to solve, and then show the reader how to solve it." (Hadley Wickham)
+ 
+R **vignettes** are a much more comprehensive and verbose treatment of daasets, extensions, and **functions**, than typical **documentation** and allow for a much more granular view and, therefore, understanding. Most are designed for instructional purposes and address contents in a manner mindful of an audience that's present with the express intention of learning. Once again, Hadley Wickham has also written a comprehensive guide to developing **vignettes**, ["Vignettes: Long-form Documentation"](http://r-pkgs.had.co.nz/vignettes.html), which is an excellent introduction to them, in general.
+ 
+You can easily search for **vignettes** available online, but you can also use a **function**, `browseVignettes()`, using the name of the extension in quotations as input. Hear, we'll call `browseVignettes()` on the extension `readr`, a **Tidyverse** extension that assists in importing data.
+ 
+```{r eval=FALSE}
+browseVignettes("readr")
+```
+ 
+Running the above command within R will automatically open your browser and, Bob's your uncle, you should have a list of **vignettes**.
+
+<br>
+
+**Quotations & Case Sensitivity:** For reasons you'll soon discover, extension names must be wrapped in quotations when input into `browseVignettes()`. Also, that's a capital `V` in `Vignettes`, and R is a *case-sensitive* language, meaning a lower-case `v` will not produce the desired effect.
+
+<br>
+
+### Extension-Specific Websites
+
+>"The magrittr (to be pronounced with a sophisticated french accent) is a package with two aims: to decrease development time and to improve readability and maintainability of code. Or even shortr: to make your code smokin' (puff puff)!" (Stefan Milton Bache)
+
+Some **vignettes** are highly stylized, like that of the `magrittr` extension [seen here](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html). Others are not only informational, but promotional, like the collection of **Tidyverse** extensions [seen here](https://www.tidyverse.org/packages/). Other sites may be entirely instructional, like *Stat 545's* ["Introduction to dplyr"](http://stat545.com/block009_dplyr-intro.html). While neither traditional **documentation** nor **vignettes**, these websites may prove even more valuable and often more engaging than other resources.
+
+<br>
+ 
+<center>
+ 
+![*The official [Tidyverse website](https://www.tidyverse.org/packages/) provides a more stylized and engaging experience than conventional alternatives.*](tidyverse_img.jpg)
+ 
+</center>
+ 
+<br>
+
+### Quoting Your Console
+ 
+In the introduction to this section, we addressed the differences between a **warning message** and an **error message**. Beyond signaling to the user that something's either unexpected or dysfunctional, they may offer "opionated" messages with valuable suggestions. Should further attempts fail, consider copying and pasting the message, verbatim and in quotes, into a search engine. You also may want to consider including other important search terms, like "r", the **function** name, or the name of the extension your using.
+ 
+The probability that someone has encountered a similar error, especially when first learning R, is extremely high. As you continue to use R, you'll learn more key vocabulary terms that are especially important when using search engines. 
+
+<br>
+ 
+<center>
+ 
+![*Quoting a warning or error message and other important search terms often indicates that you're not alone.*](google_img.jpg)
+ 
+</center>
+ 
+<br>
+ 
+### Forums & Archives
+ 
+This is often my first choice for getting out of a jam (or preventing one). Importantly, this and all of the above strategies should generally be exhausted before asking a human for help, whether it's someone you know or a post to a mailing list or discussion forum. 
+ 
+Again, search engines tend to win the day, here, but there are some particular platforms which are more reliable. As you query, you'll likely see sites like [Stack Overflow](https://stackoverflow.com/) and [Cross Validated](https://stats.stackexchange.com/), which are powerful discussion forums on computer and data science. Rather than using a search engine, you could visit a site directly, but make sure to filter by tooling ("R"). **CRAN** also maintains the ["R-Help" mailing list](https://www.r-project.org/mail.html) with archived questions and replies that may prove valuable.
+
+
+<br>
+ 
+<center>
+ 
+![*Forum platforms like [Stack Overflow](https://stackoverflow.com/) are teeming with answers to questions you haven't yet asked.*](stack_img.jpg)
+ 
+</center>
+ 
+<br>
+ 
+**Pro Tip****:** In my experience, language precision is key to using search engines and scouring archives, and so the present introduction places a strong emphasis on gradually introducing vocabulary. Instead of something akin to "pull out a word", you're better off searching with terminology like "extract a pattern". Rather than saying "combine two tables", again, you're better off searching for "merge two data frames". These terms, which aren't key vocabulary, but are still very precise, will gradually and more frequently enter currency the more you practice in R.
+
+<br>
+ 
+<center>
+ 
+![*The struggle is real. Source: [XKCD](https://xkcd.com/979/).*](https://imgs.xkcd.com/comics/wisdom_of_the_ancients.png)
+ 
+</center>
+ 
+<br>
+ 
+### Consulting Humans
+ 
+Consulting another person for help in R is as much a science as it is an art. That is to say, there are critical components necessary for a question to be considered "good". As goes the adage, there's *no such thing as a stupid question* but, in R, there *are thoughtless ways* to ask for help. Before going further, as a rule, know the following:
+ 
+**Unless it's her or his job to help, do not ask anyone for help until you've exhausted all of the above options.**
+ 
+There are several different ways to ask for help, including but not limited to:
+ 
+* The *R-Help Mailing List*
+* Forums, like *Stack Overflow*
+* Message boards, e.g. a **MOOC (Massive Open Online Classes)**
+* Communities, like [Reddit's r/rstats](https://www.reddit.com/r/rstats/)
+* *Twitter*: [#rstats](https://twitter.com/hashtag/rstats?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Ehashtag)
+* Emailing colleagues, instructors
+* Asking in-person
+ 
+*Twitter's* [#rstats](https://twitter.com/hashtag/rstats?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Ehashtag) was a relatively recent discovery, but there is a very active community of R users. If you "tweet" a question that includes [#rstats](https://twitter.com/hashtag/rstats?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Ehashtag), you'll get answers and resources from all over the world - sometimes very quickly. However, the size and formatting restrictions in "tweets" do not accomodate the best way to ask a question, nor the best way to answer one.
+
+<br>
+
+**How to Ask for Help in R:** As aforementioned, there is a "right way", or at least a "considerate way", to ask for help in R. Biostatistian and Johns Hopkins Professor [Jeffrey T. Leek](https://en.wikipedia.org/wiki/Jeffrey_T._Leek) provides a concise checklist:
+
+* Exhaust all other options, e.g. **documentation**, **vignettes**, forum archives
+* If posting to a forum or using a mailing list, read any guidance material to ensure compliance
+* If posting or emailing, use a succinct but informative title or subject line, including versions, operating systems, etc.
+* Clearly state your intention and expectatation
+* Provide either real or imitation data and the minimal code to ensure the problem is **reproducible**
+* Provide either real or imitation output, including **warnings** and **error messages**
+* If using **random number generation (RNG)**, include the **seed**
+* Use common conventions and clean code, especially in a markup language
+* Include the versions of R, *RStudio*, and any extensions you're using
+* Inlude your operating system (OS), e.g. *Windows*
+* Include any other important nuances if appropriate
+* Be polite
+
+As you browse through sites and forums, you'll see these recommendations in action. Emulate good examples, read the replies to bad questions, and mind this checklist. Soon, asking questions the "right way" will be second nature.
+
+<br>
+ 
+<center>
+ 
+![*Even the best questions are thwarted by poor delivery. Source: [Perry Bible Fellowship](http://pbfcomics.com/comics/no-survivors/).*](http://pbfcomics.com/wp-content/uploads/2016/04/PBF084-No_Survivors.png)
+ 
+</center>
+ 
+<br>
+ 
+**Learn More:** As you've likely noticed, **reproducibility** is an overarchign theme in R, not just in research, but in asking questions the "right way". There are indeed entire books which treat **reproducible research**, but there's an astoundingly deep amount of literature on the "right way" to ask a question. Software Developer and Author [Eric S. Raymond](https://en.wikipedia.org/wiki/Eric_S._Raymond) treats the practice intricately in his ["How to Ask Questions the Smart Way"](http://www.catb.org/esr/faqs/smart-questions.html). Less meticulous but still valuable, **CRAN** developed the ["Posting Guide: How to Ask Good Questions that Prompt Useful Answers"](https://www.r-project.org/posting-guide.html). While a host of answers to one of *Stack Overflow's* most popular threads revolves around **reproducibility** in the context of asking for help, called ["How to Make a Great R Reproducible Example"](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example). Read these and you can ask virtually anything about R with confidence.
+ 
+<br>
+ 
+# The Fundamentals of R
+
+In essence, the R language is comprised of a grammar similar to the natural languages we use to communicate with each other every day. Like language, it's comprised individually or *parts of speech* like verbs, adverbs, adjectives, nouns, pronouns, preopositions, and articles. The following is a relatively high-level introduction to these *parts of speech*, including the most common **operators** (*prepositions*) used in R, the anatomy of an R **function** (*verbs*) and their **arguments** (*adverbs*), how these interact with **objects** (*nouns*), and how to extend the functionality of R through **packages** (*dialects, idioms, neologisms, colloquialisms*).
+ 
+**Packages** are collections of **functions** that help the user go beyond the ecosystem of **Base R** (*Early Modern English*) and its predecessor, the **S Language** (*Late Middle English*). Up until now, we've been referring to them as "extensions", though hereafter, we'll use this R-specific terminology.
+
+Don't worry if the above seems overwhelming. Again, we're taking a holistic approach, so we'll delve into each of these concepts with earnest. 
+ 
+<br>
+
+## How to Use this Guide
+ 
+Although we've seen a few snippets of code in some examples above, we're going to start seeing some more **expressions** "in the field". Thanks to the implementation of **literate programming**, I'm able to weave R **expressions** into the present introduction while explaining those **expressions** in (admittedly verbose) human-readable language.
+ 
+<br>
+ 
+**Unformatted Font:** Note that unformatted font, for example, `this`, `that`, and `the other thing`, is used to indicate machine-readable language, even if it's used in-line, like the example. It's a simple and unobtrusive way to differentiate human-readable language from **expressions** intended for machine consumption. Note this particular formatting, or lack thereof, when you see it - typically, it's used to flag datasets, variables, entire **expressions**, **function** and **package** names, and **operators**. 
+ 
+<br>
+ 
+**Code Chunks:** So-called "code chunks", unlike `unformatted font`, are much more easy to discern. "Code chunks" allow **literate programming** authors to insert machine-readable code in human-readable text. Behind the scenes, "code chunks" are often executed, without alerting the reader, in order to produce tables, **data visualization**, interactive tools, and more. In instructional materials, e.g. the present introduction, "code chunks" are used for demonstrative purposes, such as how to use a particular **function**. The following is an example of two "code chunks", the first of which executes silently, without output, and the second of which will both execute the **expression** and **print** the results.
+
+```{r message=FALSE, warning=FALSE, cache=TRUE}
+my_example <- "This is an example."
+```
+ 
+<br>
+ 
+Now, we'll both both execute and **print** the results.
+ 
+```{r}
+print(my_example)
+```
+ 
+<br>
+
+**Run It:** When I first began studying R, one of my more regrettable mistakes - apart from not learning R earlier in life - was that I'd read literature on R and simply look at the coding examples. This is an error. If possible, *try running every bit of ostensibly non-malicious code you find*. There's a reason most literature on R takes advantage of **literate programming** via "code chunks", so read with *RStudio* open, and experiment with new **expressions** in the R **console** often. 
+ 
+<br>
+ 
+**Using Local Data****:** Where appropriate, we'll either demonstrate using or practice with squeaky clean, local data from [CNY Vitals Pro](https://pro.cnyvitals.org/login). These data are invariably well-formatted, small in size, and excellent for instruction. As other sources are introduced, don't just use R's built-in data, use the data from the world around you. It's a bit more motivating, and you'll hone your domain expertise and **hacking** skills simultaneously.
+ 
+<br>
+ 
+## R: An Overdesigned Calculator
+
+No introduction to R would be complete without an introductory example of how R functions like a calculator - a very powerful calculator, but a calculator nonetheless. Understanding this, however, is the foundation on which rests the architecture of your **hacking** skills. Let's go.
+ 
+<br>
+ 
+### Arithmetic Operators
+ 
+Data are comprised of **values**. Though there are many kinds of data, typically the most common are **numeric values**, which work just like numbers in a basic calculator. We can act on **numeric** data using **operators**, for example:
+
+* `+` for addition
+* `-` for subtraction 
+* `/` for division
+* `*` for multiplication
+* `^` for exponents
+* `()` for parentheses
+
+These arithmetic **operators** may be used in **expressions** to perform arithmetic calculations, like addition:
+ 
+```{r}
+2 + 2
+```
+ 
+Likewise, there's subtraction:
+
+```{r}
+5 - 1
+```
+ 
+Let's not forget multiplication or division:
+ 
+```{r}
+(3 * 4) / 3
+```
+ 
+And, of course, exponents, like 2 *cubed*:
+
+```{r}
+2^2
+```
+ 
+<br>
+ 
+**Order of Operations:** Do you recall the *order of operations* from back in grade school? Me neither. But I do remember "Please Excuse My Dear Aunt Sally" (or "PEMDAS"), i.e. (1) Parentheses, (2) Exponents, (3) Multiplication, (4) Division, (5) Addition, and (6) Subtraction. R typically follows the same order for more complex **expressions**.
+
+This holds true in R, as well. Let's look at a more complex **expression**:
+ 
+```{r}
+2 + (6 * 2) / ((3^2) / 3) - 2
+```
+ 
+Here, R evaluates the expressions in the parentheses first ("Please" or "P"), i.e. `(6 * 2)` and `((3^2) / 3)`, respectively. Because `(3^2)` are parentheses inside a parentheses, it's evaluated before all others. It's like the film *Inception*, except it makes sense.
+ 
+```{r}
+(3^2)
+```
+ 
+```{r}
+(9 / 3)
+```
+ 
+That was the second instance of `()` in the **expression**, albeit broken down into smaller pieces. Let's see if R calculates the entire contents within the `()` in the same manner:
+ 
+```{r}
+((3^2) / 3)
+```
+
+Sweet. Let's look at all the operations within `()`, i.e. `(6 * 2) / ((3^2) / 3)`. Here, R follows "PEMDAS" to the letter. It begins by **evaluating** the contents of the `()` ("Please" or "P"), followed by **evaluation** of the `/` ("Dear" or "D"). 
+ 
+```{r}
+(6 * 2) / ((3^2) / 3)
+```
+ 
+The `2 +` and `- 2` cancel each other out, but would be **evaluated** last, per "PEMDAS", resulting in 4.
+ 
+<br>
+ 
+### Objects & The Assignment Operator
+ 
+R is an [**object-oriented programming**](https://en.wikipedia.org/wiki/Object-oriented_programming), or **OOP** language. While explaining **OOP** falls outside the scope of this introduction, it's integral to understand the importance of **objects**. In fact, you may hear the word **"object"** quite a bit, as **objects** are essentially devices that store information. In **OOP**, **objects** are self-contained and fiercely guarded, and may only be acted on or changed through the express use of **functions** (sometimes referred to as "methods"). The curious learner may wish to learn about this **OOP** property, called ["encapsulation"](https://en.wikipedia.org/wiki/Encapsulation_(computer_programming)).
+ 
+*Just about everything*, apart from naked **values**, are **objects**. Data are stored in various ways in **objects**, including massive datasets. A single value (i.e. a datum) may be stored in an **object**. **Functions** are stored as **objects**. A **string**, or a sequence of letters or numbers, may be stored in an **object**. Even **operators**, which are actually **functions**, are also **objects**, albeit "primitive" ones.
+ 
+<br>
+ 
+**Assigning to Objects:** During an R session, **objects** are typically stored locally in your "workspace". We can easily store individual **values**, datasets, **functions**, and even entire **expressions** by using the **assignment operator**, or `<-`. The **object** to the left of the **assignment operator** is *assigned* the information to the right of the **assignment operator**.
+
+Let's see what this looks like in action. We'll store the **numeric value** `7` in the **object** named `lucky_number`:
+ 
+```{r}
+lucky_number <- 7
+```
+
+Now, if we choose to **print** the object `lucky_number`, we only need to type the name of the **object**, `lucky_number`, and execute it in the R **console**. Alternatively, we can call the **function** `print()` to explicitly print its contents. Here, we'll do both.
+
+Calling the bare **object** will **print** its contents:
+ 
+```{r}
+lucky_number
+```
+ 
+Calling **function** `print()` *explicitly* tells R to **print** the **object** contents:
+
+```{r}
+print(lucky_number)
+```
+ 
+<br>
+ 
+**Assigning Expressions:** Like singular **values**, we can assign entire expressions to an **object**. Let's use the same expression on which we practiced the *order of operations*, `2 + (6 * 2) / ((3^2) / 3) - 2`. We'll name the **object** `my_equation`. Note that the entirety of the **expression** to the right of the **assignment operator** (`<-`) will be stored in the **object** to the left of the **operator**.
+
+```{r}
+my_equation <- 2 + (6 * 2) / ((3^2) / 3) - 2
+```
+
+Recall that all of the arithmetic **expressions** in the above examples **evaluated** to 4. Let's call the **object** `my_equation` to see what happens.
+ 
+```{r}
+my_equation
+```
+
+Egad! The **object**, `my_equation`, now stores a single **value**: 4.
+ 
+<br>
+ 
+**Objects in Scripts:** In the above example, the **object**, `my_equation`, and the **value**, 4, are *interchangeable*. Let's see what that means by way of example. First, we'll use the **object** `lucky_number` in an arithmetic operation. Recall that the **value** in `lucky_number` is 7:
+ 
+```{r}
+lucky_number - 2
+```
+ 
+By subtracting 2 from `lucky_number`, the **expression** then **evaluates** to 7, i.e. `7 - 5`. 
+ 
+What about `my_equation`, our **object** that stored an **expression** that **evaluated** to a single **value**: 4?
+ 
+```{r}
+1 + my_equation
+```
+
+Again, the **object** acts interchangeably with the **value**. For the grand finale, let's find the sum of **objects** `lucky_number` and `my_equation`, equal to 7 and 4, respectively:
+ 
+```{r}
+lucky_number + my_equation
+```
+ 
+As one might expect, both **objects** are **evaluated** arithmetically. *This has enormous implications.*
+ 
+<br>
+ 
+**Pro Tip****:** Do not attempt to use a "space" when naming an **object**. An **error message ** will be thrown, as R will fail to recognize what may be perceived as two individual **objects**. This returns us to the **conventions** discussed in previous sections, and especially **case**. When naming objects, you can use periods (`.`), underscores (`_`), or `CamelCaps` to created compound **object** names of more than one word.
+
+What's more, R only recognizes objects when they are "bare". That is, when they are not in quotes. Observe:
+
+```{r}
+lucky_number
+```
+ 
+Compare this to:
+
+```{r}
+"lucky_number"
+```
+ 
+In the first scenario, R is able to recognize that `lucky_number` is an **object**, and correctly **prints** its contents. In the second scenario, the quotations (`""`) signal to R that `"lucky_number"` is not an **object**, but a **string** (a sequence of characters). In effect, it simply **prints** the sequence as output. Keep this in mind going forward - sometimes you may need to add quotes, other times you may need to omit them, depending on your intention. Like with *case sensitivity*, R is also sensitive to *quotation*, and this may be a minor source of frustration for new R users.
+ 
+<br>
+
+**Listing Objects:** Once you've initialized an **object**, whether it contains information or is entirely empty (which is possible), *RStudio* neatly lists stored **objects** in the upper-right "Environment" panel, as well as display the first few **values** stored, if possible. You can **print** all stored **objects** to the R **console** or use then in your code. If you happen to have many **objects** stored, you can easily print those objects with the **function** `ls()`, the "List Objects" **function**. Note that `ls()` requires no additional inputs.
+
+```{r}
+ls()
+```
+ 
+<br>
+ 
+<center>
+ 
+![*RStudio neatly arranges and labels your objects in the "Environment" panel.*](environment_pane.jpg)
+ 
+</center>
+ 
+<br>
+
+**Removing Objects:** Lastly, we can easily remove an **object** from our workspace or other **environments** using the **function** `rm()` and inputting the **object** name. Here, we'll remove `lucky_number` using `rm()` and then inspect our remaining **objects** using **function** `ls()`.
+ 
+```{r}
+rm(lucky_number)
+ls()
+```
+
+Far out.
