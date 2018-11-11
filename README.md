@@ -1,3 +1,3 @@
 # R Sessions
 
-Introduction to R sessions, facilitated boweekly at the Centray New York Community Foundation's Community Ballroom, are available here.
+Introduction to R sessions, facilitated biweekly at the Central New York Community Foundation's Community Ballroom, are available here.
