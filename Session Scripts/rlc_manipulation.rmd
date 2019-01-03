@@ -1,0 +1,329 @@
+---
+title: 'Intro to R: Data Manipulation'
+author: "Jamison R. Crawford, MPA"
+date: "January 3, 2019"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    number_sections: true
+---
+
+# Version Notes
+
+**Latest Versions & Updates:** This markdown document was built using the following versions of *R* and *RStudio*:
+ 
+* R v. 3.5.1
+* RStudio v. 1.1.456
+* Document v. 1.0
+* Last Updated: 2019-01-03
+
+# Review: Dates & Times
+
+**Standard, Unambiguous Format:** Dates are best stored in "YYYY-MM-DD" format.
+
+* This is especially true if dates are ordered naively, e.g. alphabetically
+
+<br>
+
+<center>
+
+
+```{r datetime_comic, cache=TRUE, echo=FALSE, fig.cap="*The right way versus alternatives. Source: [XKCD](https://xkcd.com/1179/)*", out.width = '60%'}
+
+knitr::include_graphics("https://imgs.xkcd.com/comics/iso_8601.png")
+
+```
+
+</center>
+
+<br>
+
+**The Epoch**: 12:00 AM, January 1, 1970 is the time by which all time-related objects are compared and stored.
+
+* Times preceding 1970-01-01 may be stored as negative numbers
+* Times following 1970-01-01 may be stored as positive numbers
+
+<br>
+
+**Datetime Classes:** Time-related variables may be one of several classes:
+
+* **POSIXlt:** Stores datetimes as components parts, e.g. days, months, hours, and minutes
+* **POSIXct:** Stores datetimes as total seconds relative to 1970-01-01
+* **Date:** Stores datetimes as total days relative to 1970-01-01
+* **Difftime:** Stores intervals of time between date and datetime objects
+
+<br>
+
+**Package "Lubridate"**: A unified, easy-to-use package for working with dates and times in R.
+
+```{r, message=FALSE}
+if(!require(lubridate)){install.packages("lubridate")}
+library(lubridate)
+```
+
+<br>
+
+**Formatting in "Lubridate":** Lubridate's functions make it easy to format dates and times.
+
+* Use functions specifying day, month, year, etc. for easy conversion, e.g. `mdy()` for "Aug. 10, 1989"
+* Recall that `y` is "year", `m` is "month", `d` is "day", `h` is "hour", etc.
+
+<br>
+
+**Extracting Time Components:** Extract individual time components, e.g. weekdays, months, etc.
+
+* Function `year()`, `month()`, and `day()`, e.g., extract year, month, and day, respectively
+
+<br>
+
+**Rounding Dates:** Date rounding lets you round to the nearest, minimum, or maximum unit of time.
+
+* Function `round_date()` rounds to the nearest unit specified
+* Function `floor_date()` rounds to the minimum possible value of the unit specified
+* Function `ceiling_date()` rounds to the maximum possible value of the unit specified
+
+<br>
+
+# Data Manipulation
+
+> "I think you can have a ridiculously enormous and complex data set, but if you have the right tools and methodology then it's not a problem." (Aaron Koblin)
+
+**What is data manipulation?:** Basically, the process of organizing data per your needs.
+
+<br>
+
+## On Package "dplyr"
+
+**A grammar for data manipulation:** Package "dplyr" purports to use a form of manipulation-related grammer.
+
+* Similar to Leland Wilkinson's *The Grammar of Graphics*, the underpinnings of package "ggplot2"
+* Fundamentally important package for the Tidyverse's myriad libraries and extensions
+* Informally, "dplyr" functions are referred to as "verbs"
+* Focuses on 5 key "verbs" and lesser "helper functions"
+* Coded in C++, so extremely fast compared to base R
+* Design for data frames; matrices are out of luck
+
+<br>
+
+## Installing "dplyr"
+
+**Run the Following:** This code detects if "dplyr" is present, installing if not, and loads the "dplyr" package.
+
+```{r message=FALSE}
+if(!require(dplyr)){install.packages("dplyr")}
+library(dplyr)
+```
+
+<br>
+
+## On Tibbles
+
+**Tibbles:** Special kinds of data frames used in "dplyr" and other Tidyverse packages.
+
+* These data structures are made with function `tbl_df()`
+* Tibbles only print enough data to fit onto your *RStudio* console
+* Unlike standard data frames, tibbles provide data dimensions, variable names, and variable classes
+* There is little difference in how data frames and tibbles function, only new features
+
+**A Data Frame:**
+
+```{r}
+as.data.frame(mtcars)
+```
+
+**A Tibble:**
+
+```{r}
+tbl_df(mtcars)
+```
+
+<br>
+
+## Passing the Pipe
+
+**Piping:** The process of passing output from one function as input to another function.
+
+* To do this, we use the **"Pipe Operator"**, or `%>%`, to chain functions
+* Piping always passes a data frame from left to right
+* Piped data can move leftward only for assignment (`<-`)
+
+For example, we can pipe multiple `filter()` operations from package "dplyr":
+
+```{r}
+mtcars %>%
+  filter(mpg > 23) %>%
+  filter(cyl < 6) %>%
+  filter(hp < 90 )
+```
+
+**Note:** Once you've called the name of the data frame (here, `mtcars`), you don't need to call it again!
+
+<br>
+
+# Essential "dplyr" Verbs
+
+## Select (Columns)
+
+Function `select()` is used for dimension reduction, or eliminating unwanted variables.
+
+* Simply input or pipe a data frame or tibble to `select()`
+* List all variable names to preserve, no quotes needed!
+* Include variables in a sequence using `:`, e.g. `mpg:wt`
+* Exclude variables by putting `-` before their names, e.g. `-drat`
+
+```{r}
+head(mtcars)
+mtcars %>% 
+  select(mpg, cyl, hp, wt, am)     # Calling data frame first, then piping
+select(.data = mtcars, mpg, cyl, hp, wt, am)     # Using select() without piping
+mtcars %>%
+  select(mpg:wt, -disp, -drat)     # From "mpg" to "wt", excluding "drat" and "disp"
+```
+
+**Helper Functions for Select:** Package "dplyr" verbs have "helper functions", e.g.
+
+* Functions `starts_with()` and `ends_with()` help select well-labeled variables
+* Functions `contains()` and `matches()` help select variables containing patterns
+
+<br>
+
+## Filter (Rows)
+
+Function `filter()` is used to preserve only rows that meet specified criteria.
+
+* Use comparators like `<`, `>`, `<=`, `>=`, `==`, and `!=`
+* Use multiple comparator statements in a single call to `filter()`
+
+```{r}
+mtcars %>% 
+  filter(mpg > 23)     # Calling data frame first, then piping
+filter(mtcars, wt < 2.1)     # Using select() without piping
+filter(mtcars, 
+       mpg > 23, 
+       wt < 2.1)     # Filter on multiple conditions
+```
+
+<br>
+
+## Mutate
+
+Function `mutate()` easily creates new variables from pre-existing ones.
+
+* Like variables from the data frame, new variable names don't need quotes
+* The new name of the variable is leftward, the formula is rightward
+* Separate the new name and variable formula with `=`
+* Multiple mutations may occur in a single `mutate()` call
+
+**Example:** Converting `mtcars` weight units (`wt`) from 1,000 lbs. to 1 lb.
+
+```{r}
+mtcars %>%
+  select(-disp:-drat, 
+         -qsec:-am) %>%              # Reducing variables with select()
+  mutate(wt_lbs = wt * 1000) %>%     # Mutating variable "wt": "wt_lbs"
+  as_tibble()                        # Coercing to tibble
+```
+
+<br>
+
+## Arrange
+
+Function `arrange()` reorders entire rows based on values for a specified variable.
+
+* Specified variables need no `""` or `$`
+* The first variable specified is the one to be rearranged
+* The second variable specified is the values by which to arrange
+* One variable may be arranged per multiple variables and values
+* Use function `desc()` for descending order
+
+```{r}
+my_cars <- mtcars %>% 
+  select(mpg:wt, -disp, -drat) %>%
+  filter(wt < 3.2)
+
+my_cars %>% arrange(mpg)          # Arrange by "mpg"
+my_cars %>% arrange(cyl, mpg)     # Arrange by "cyl", then "mpg"
+```
+
+<br>
+
+# Applied Practice
+
+**Instructions:** Run the following code to download the 2018 Hancock Airport renovation data, retrieved via Freedom of Information Law by Legal Services of Central New York (LSCNY) and prepared by the present author. Read more here: [Hancock Repository](https://github.com/jamisoncrawford/hancock).
+
+```{r message=FALSE, warning=FALSE}
+if(!require(readr)){install.packages("readr")}
+library(readr)
+
+url <- "https://tinyurl.com/y85g52dg"
+hancock <- read_csv(url)
+```
+
+<br>
+
+**Explore Your Data:** Run the following code to explore your data. We'll use a new "dplyr" function, `glimpse()`, which is very similar to `str()`, only even more informative.
+
+```{r}
+class(hancock)
+dim(hancock)
+colnames(hancock)
+glimpse(hancock)
+summary(hancock)
+```
+
+<br>
+
+**Challenges:** Complete the challenges using only "dplyr" verbs. Connect all "dplyr" verbs with the pipe operator, `%>%`.
+
+1. **Filter:** Only some companies in variable `name` have race and gender data. 
+
+    - Use `filter()` to preserve the following companies:
+
+        - Longhouse Construction
+        - Patricia Electric
+        - Quality Structures
+        - Schalk & Son
+        - Stone Bridge Iron & Steel
+ 
+    - Store your updated data frame in an object using assignment, `<-`
+    - It may be helpful which companies to exclude, viz.:
+    
+        - John W. Danforth Company
+        - Environmental Services
+        - Niagara Erecting
+    
+2. **Select:** We can reduce some unwanted or unnecessary dimensions, like detailed location data.
+
+    - Use `select()` to preserve the following variables
+    
+        - `name`
+        - `title`
+        - `sex`
+        - `race`
+        - `net`
+        - `county`
+        - `state`
+        
+    - Again, store your data using assignment, `<-`
+    
+3. **Arrange:** We can gain better insight by sorting the our data.
+
+    - Use `arrange()` to sort by:
+    
+        - Company name, or variable `name`
+        - Ethnicity, or variable `race`
+        - Worker county, or variable `county`
+        - Net pay for period, or variable `net`
+        
+    - Again, store your data using assignment, `<-`
+
+4. **Simplify:** Print your resulting data frame as a tibble using `as_tibble()`; resave.
+ 
+ 
+5. **Chain:** Beginning with `hancock`, chain all above steps into a single command!
+
+    - Use the **pipe operator**, `%>%`, to chain together operations
+    - Remember that you only need to call the name of the data frame *once*
+    - What goes into and comes out of a "dplyr verb" must be a data frame or tibble
