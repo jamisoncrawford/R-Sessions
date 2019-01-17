@@ -16,8 +16,10 @@ output:
  
 * R v. 3.5.1
 * RStudio v. 1.1.456
-* Document v. 1.0
-* Last Updated: 2019-01-03
+* Document v. 2.0
+* Created: 2019-01-03
+* Updated: 2019-01-17
+  - Added packages `dplyr`, `tidyr` functions 
 
 # Review: Dates & Times
 
@@ -164,6 +166,10 @@ mtcars %>%
 
 # Essential "dplyr" Verbs
 
+**Fundamental Verbs:** The following are the most critical `dplyr` functions.
+
+<br>
+
 ## Select (Columns)
 
 Function `select()` is used for dimension reduction, or eliminating unwanted variables.
@@ -230,13 +236,15 @@ mtcars %>%
 
 ## Arrange
 
-Function `arrange()` reorders entire rows based on values for a specified variable.
+Function `arrange()` reorders entire rows based on values for one or more specified variables.
 
 * Specified variables need no `""` or `$`
 * The first variable specified is the one to be rearranged
 * The second variable specified is the values by which to arrange
 * One variable may be arranged per multiple variables and values
 * Use function `desc()` for descending order
+
+**Example:** Arranging `mtcars` by mileage, `mpg`, then mileage (`mpg`) and cylinders (`cyl`).
 
 ```{r}
 my_cars <- mtcars %>% 
@@ -249,9 +257,9 @@ my_cars %>% arrange(cyl, mpg)     # Arrange by "cyl", then "mpg"
 
 <br>
 
-# Applied Practice
+## Mid-Tutorial Practice
 
-**Instructions:** Run the following code to download the 2018 Hancock Airport renovation data, retrieved via Freedom of Information Law by Legal Services of Central New York (LSCNY) and prepared by the present author. Read more here: [Hancock Repository](https://github.com/jamisoncrawford/hancock).
+**Instructions:** Run the following code to download the [2018 Hancock Airport renovation data](https://github.com/jamisoncrawford/hancock).
 
 ```{r message=FALSE, warning=FALSE}
 if(!require(readr)){install.packages("readr")}
@@ -263,9 +271,9 @@ hancock <- read_csv(url)
 
 <br>
 
-**Explore Your Data:** Run the following code to explore your data. We'll use a new "dplyr" function, `glimpse()`, which is very similar to `str()`, only even more informative.
+**Explore Your Data****:** Run the following code to explore your data.
 
-```{r}
+```{r eval=FALSE}
 class(hancock)
 dim(hancock)
 colnames(hancock)
@@ -275,7 +283,9 @@ summary(hancock)
 
 <br>
 
-**Challenges:** Complete the challenges using only "dplyr" verbs. Connect all "dplyr" verbs with the pipe operator, `%>%`.
+**Challenges:** Complete the challenges using only "dplyr" verbs. 
+
+* Connect all "dplyr" verbs with the pipe operator, `%>%`.
 
 1. **Filter:** Only some companies in variable `name` have race and gender data. 
 
@@ -327,3 +337,321 @@ summary(hancock)
     - Use the **pipe operator**, `%>%`, to chain together operations
     - Remember that you only need to call the name of the data frame *once*
     - What goes into and comes out of a "dplyr verb" must be a data frame or tibble
+    
+<br>
+
+## Grouping
+
+Function `group_by()` will group observations, by one or more specified variables, *for further manipulation*.
+
+* Functions "piped" (`%>%`) after `group_by()` will transform each group individually
+* All variables are treated categorically whether of class `character` or `factor`
+* Refrain from attempting to group by `numeric` or other continuous data
+* Specified variables need no `""`, `$`, or `=`
+
+**Importing New Data****:** Grouping Hancock Airport and Lakeview Amphitheater renovations [worker records]("https://github.com/jamisoncrawford/reis/blob/master/Datasets/lakeview_hancock_merge.csv") for summary.
+
+```{r cache=TRUE, message=FALSE, warning=FALSE}
+
+library(readr)
+library(dplyr)
+
+url <- "https://tinyurl.com/y9vla57e"      # Assign URLs for cleaner code
+
+workers <- read_csv(url) %>%               # Read in URL data, pipe forward
+  mutate(zip = as.character(zip)) %>%      # Coerce "zip" to class character
+  select(project:race)                     # Reduce variables, assign to "workers"
+
+```
+
+**Grouping by Project****:** Use piping (`%>%`) to chain `group_by()`.
+
+```{r, eval=FALSE}
+
+workers %>%
+  filter(!is.na(project)) %>%        # Remove rows missing values for "project"
+  group_by(project)                  # Group by "project"
+  
+```
+
+**Grouping by Project & Race****:** Use piping (`%>%`) to chain `group_by()`.
+
+```{r, eval=FALSE}
+
+workers %>%
+  filter(!is.na(project),
+         !is.na(race)) %>%        # Remove rows missing values for "project"
+  group_by(project, race)         # Group by "project" and "race"
+  
+```
+
+**Takeaway****:** Function `group_by()` is part bridging function, part partitioning function.
+
+* On it's own, *it doesn't do anything, it is a means to an end*
+* Functions piped after `group_by()` will then act independently on each group 
+* Function `summarize()` was built to inherit `group_by()` output
+* Limited application for non-statistical functions
+
+<br>
+
+## Summarizing
+
+Function `summarize()` creates custom summaries using summarizing functions as arguments.
+
+* The formula for creating a summary variable is: `variable = transformation`
+    - The leftward `variable` may take any alphanumeric name
+    - The rightward `transformation` takes any expression, functions, etc.
+
+**Example****:** Call `summarize()` for the `median()` and `mean()` of variable `gross`.
+
+```{r}
+
+workers %>%
+  filter(!is.na(gross)) %>%                   # Filter rows missing "gross" (optional)
+  summarize(median_gross = median(gross),     # Call median() on gross; name "median_gross"
+            mean_gross = mean(gross))         # Call mean() on gross; name "mean_gross"
+
+```
+
+**Spaces, Numbers in Variable Names****:** Use backticks, `` `` ``, to allow spaces, numbers, etc. in variable names:
+
+```{r}
+
+workers %>%
+  filter(!is.na(gross)) %>%                     # Filter rows missing "gross" (optional)
+  summarize(`Median Gross` = median(gross),     # Name `Median Gross`
+            `Mean Gross` = mean(gross))         # Name `Mean Gross`
+
+```
+
+<br>
+
+# Group-Summarize Operations
+
+**A Powerful Combination****:** So powerful, it warranted it's own section.
+
+* "Group-" or "Group By-Summarize" operations are powerful analytical techniques
+* Pipe `group_by()` and specified grouping variables to `summarize()`
+* Perform statistical operations on grouped observations *independently*
+* Summarized output *does not preserve the rest of your data*
+
+**Median Gross by Race****:** We'll combine `group_by()`, `summarize()`, and `median()`.
+
+```{r}
+
+workers %>%
+  filter(!is.na(race),
+         !is.na(gross)) %>%                         # Filter missing "race", "gross"
+  group_by(race) %>%                                # Group by "race"
+  summarize(med_gross = median(gross)) %>%          # Summarize with median() on "gross"
+  arrange(desc(med_gross))                          # Arrange by descending order
+
+```
+
+**Median Gross by Company, Race****:** We'll apply the same techniques as above, adding `name`.
+
+```{r}
+
+workers %>%
+  filter(!is.na(race),
+         !is.na(gross)) %>%                         # Filter missing "race", "gross"
+  group_by(name, race) %>%                          # Group by "race"
+  summarize(med_gross = median(gross)) %>%          # Summarize with median() on "gross"
+  arrange(name, race)                               # Arrange company, race, gross
+
+```
+
+**Note****:** The more variables input in `group_by()`, the more sophisticated the output.
+
+<br>
+
+## Practice: Grouping & Summarizing
+
+**Instructions****:** Finish the following pipeline to get:
+
+* The `mean()` of variable `gross`
+* Group by variables `project` and `sex`
+
+```{r eval=FALSE}
+
+workers %>%
+  filter(!is.na(sex),
+         !is.na(gross)) %>% 
+  group_by()
+
+```
+
+**Question****:** Which is higher? The mean `gross` payment for males at `project` "Hancock" or "Lakeview"?
+
+<br>
+
+# Join Functions
+
+**A Family of Functions****:** Several "join", or merging, functions exist in `dplyr`.
+
+* "Join" functions always end in `*_join()`, e.g. `inner_join()`
+* Each "join" function either *mutates* or *filters* merged data
+    - **Mutating Joins** add one or more columns to the primary table
+    - **Filtering Joins** return data that are filtered, not modified
+* The base R equivalent of `*_join()` functions is `merge()`
+* Function `left_join()` is the workhorse "join" function
+* See further information on [Stat 545](https://stat545.com/bit001_dplyr-cheatsheet.html) and [RStudio](https://ugoproto.github.io/ugo_r_doc/dplyr.pdf)
+
+**Loading Location Data****:** Use variable `zip` to find additional location data.
+
+```{r, message=FALSE, warning=FALSE}
+if(!require(zipcode)){install.packages("zipcode")}
+library(zipcode)
+
+data(zipcode)
+```
+
+**Joining Location Data****:** Once loaded, we can use `left_join()` on variable `zip`.
+
+```{r}
+locations <- left_join(workers,                          # Indicate data to be joined
+                       zipcode,                          # Indicate data to join
+                       by = "zip") %>%                   # Indicate "key" variable
+  select(project:ending, ssn, gross, city:longitude)     # Reduce variables
+```
+
+<br>
+
+## Practice: Joining Data
+
+**Join More Location Data****:** Use the new `city` and `state` data to add FIPS codes.
+
+```{r, message=FALSE, warning=FALSE}
+if(!require(noncensus)){install.packages("noncensus")}
+library(noncensus)
+
+data(zip_codes)
+```
+
+**Instructions****:** Use function `left_join()` to merge `locations` and `zip_codes`.
+
+* Remember to use `by =` to specify the variable(s) by which to join
+
+```{r eval=FALSE}
+
+locations %>%
+  left_join()
+
+```
+
+<br>
+
+# Tidy Data
+
+**Tidy Data** are data that are arranged to conform to 3 core principles:
+
+* Every observation has a row
+* Every variable has a column
+* Every table contains relevant, appropriate variables
+
+You can read more about "Tidy Data" in Hadley Wickham's 2012 treatise, ["Tidy Data"](https://vita.had.co.nz/papers/tidy-data.pdf).
+
+**Tidyverse Packages** will often operate optimally or exclusively using "Tidy Data" format.
+
+<br>
+
+## Example: Untidy Data
+
+Suppose we track the weights (lbs.) of three pets over three weeks. This is known as **wide format**.
+
+```{r}
+data_frame(owner = c("Amit", "Sophia", "Greyson"), 
+           pet = c("Marshmallow", "Pebbles", "Gary Laser-Eyes"),
+           week_1 = c(56.2, 14.4, 38.1),
+           week_2 = c(56.7, 14.3, 41.1),
+           week_3 = c(56.6, 14.9, 49.3))
+```
+
+**Question****:** Can you see why these data are "untidy"?
+
+* "Week" is one variable, but here it has multiple columns
+* By converting these data to **long format**, we **tidy** them
+
+<br>
+
+## Example: Tidy Data
+
+Suppose we **tidy** the above data. This is known as **long format**.
+
+```{r}
+data_frame(owner = rep(c("Amit", "Sophia", "Greyson"), times = 3), 
+           pet = rep(c("Marshmallow", "Pebbles", "Gary Laser-Eyes"), times = 3),
+           week = rep(c(1, 2, 3), times = 3),
+           weight = c(56.2, 14.4, 38.1, 56.7, 14.3, 41.1, 56.6, 14.9, 49.3))
+```
+
+**Question****:** Why are the data now "tidy"?
+
+* Note how the dataset becomes longer as values now repeat more often
+* Hence, **tidy data** are often **long**
+
+<br>
+
+## Package "tidyr"
+
+Package `tidyr` is meant for one purpose: tidying data.
+
+* Two very important functions: `spread()` and `gather()`
+* These functions are more than transposing data, they tidy them
+
+```{r, message=FALSE, warning=FALSE}
+if(!require(tidyr)){install.packages("tidyr")}
+library(tidyr)
+```
+
+<br>
+
+## Spreading Data
+
+Function `spread()` creates multiple new columns from key-pair data.
+
+```{r}
+subset <- workers %>%
+  select(project:race) %>%
+  filter(!is.na(ending))
+
+head(subset)
+
+wrong <- subset %>% 
+  spread(key = ending,        # Unique values in `ending` become columns
+         value = hours)       # Variable `hours` is redistributed
+
+wrong[, 40:44]                # View 4 of 46 new columns added
+```
+
+**Takeaway****:** I generally avoid `spread()` but it has its uses.
+
+* We often recieve data that are "untidy", "spread", or "wide"
+* This format has it's uses for certain functions in R and other tooling
+
+<br>
+
+## Gathering (Tidying) Data
+
+Function `gather()` tidies "wide" datasets.
+
+**Create an Untidy Data Frame****:** Recreate the previous example and assign to `pets`.
+
+```{r}
+pets <- data_frame(owner = c("Amit", "Sophia", "Greyson"), 
+                   pet = c("Marshmallow", "Pebbles", "Gary Laser-Eyes"),
+                   week_1 = c(56.2, 14.4, 38.1),
+                   week_2 = c(56.7, 14.3, 41.1),
+                   week_3 = c(56.6, 14.9, 49.3))
+
+print(pets)
+```
+
+**Tidy that Data Frame****:** Use `gather()` and the notation as guidance.
+
+```{r}
+pets %>%                      # Pipe "pets" into spread()
+  gather(key = week,          # Name the variable that takes gathered column names
+         value = weight,      # Name the variable that takes gathered values
+         week_1:week_3)       # Name the columns to gather
+```
