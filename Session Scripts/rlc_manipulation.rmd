@@ -1,7 +1,7 @@
 ---
 title: 'Intro to R: Data Manipulation'
 author: "Jamison R. Crawford, MPA"
-date: "January 3, 2019"
+date: "January 31, 2019"
 output: 
   html_document:
     toc: true
@@ -20,6 +20,11 @@ output:
 * Created: 2019-01-03
 * Updated: 2019-01-17
   - Added packages `dplyr`, `tidyr` functions 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+if(!require(kableExtra)){install.packages("kableExtra")}
+library(kableExtra)
+```
 
 # Review: Dates & Times
 
@@ -559,12 +564,18 @@ You can read more about "Tidy Data" in Hadley Wickham's 2012 treatise, ["Tidy Da
 
 Suppose we track the weights (lbs.) of three pets over three weeks. This is known as **wide format**.
 
-```{r}
-data_frame(owner = c("Amit", "Sophia", "Greyson"), 
-           pet = c("Marshmallow", "Pebbles", "Gary Laser-Eyes"),
-           week_1 = c(56.2, 14.4, 38.1),
-           week_2 = c(56.7, 14.3, 41.1),
-           week_3 = c(56.6, 14.9, 49.3))
+```{r echo=FALSE}
+pets <- data_frame(owner = c("Amit", "Sophia", "Greyson"), 
+                   pet = c("Marshmallow", "Pebbles", "Gary Laser-Eyes"),
+                   week_1 = c(56.2, 14.4, 38.1),
+                   week_2 = c(56.7, 14.3, 41.1),
+                   week_3 = c(56.6, 14.9, 49.3))
+
+kable(pets) %>%
+  kable_styling(bootstrap_options = "striped", 
+                font_size = 14, 
+                full_width = FALSE, 
+                position = "left")
 ```
 
 **Question****:** Can you see why these data are "untidy"?
@@ -578,11 +589,14 @@ data_frame(owner = c("Amit", "Sophia", "Greyson"),
 
 Suppose we **tidy** the above data. This is known as **long format**.
 
-```{r}
-data_frame(owner = rep(c("Amit", "Sophia", "Greyson"), times = 3), 
-           pet = rep(c("Marshmallow", "Pebbles", "Gary Laser-Eyes"), times = 3),
-           week = rep(c(1, 2, 3), times = 3),
-           weight = c(56.2, 14.4, 38.1, 56.7, 14.3, 41.1, 56.6, 14.9, 49.3))
+```{r echo=FALSE}
+pets_tidy <- data_frame(owner = rep(c("Amit", "Sophia", "Greyson"), times = 3), 
+                        pet = rep(c("Marshmallow", "Pebbles", "Gary Laser-Eyes"), times = 3),
+                        week = rep(c(1, 2, 3), times = 3),
+                        weight = c(56.2, 14.4, 38.1, 56.7, 14.3, 41.1, 56.6, 14.9, 49.3))
+
+kable(pets_tidy) %>%
+  kable_styling(bootstrap_options = "striped", font_size = 14, full_width = FALSE, position = "left")
 ```
 
 **Question****:** Why are the data now "tidy"?
@@ -655,3 +669,301 @@ pets %>%                      # Pipe "pets" into spread()
          value = weight,      # Name the variable that takes gathered values
          week_1:week_3)       # Name the columns to gather
 ```
+
+<br>
+
+# SQL with "dplyr"
+
+**SQL**, or **Structured Query Language** (often pronounced "sequel"), is a specialized language and is:
+
+* "SQL is over 40 years old, and is used by pretty much every database in existence." (["dplyr" vignette](https://db.rstudio.com/dplyr/))
+* Used mainly for **relational databases**, collections of datasets that are related by unique IDs
+* One of the most important languages in data analytics, given the prevalence of databases
+* Practically *domain-specific*, i.e. used almost exclusively for a single purpose
+
+<br>
+
+## Relational Databases
+
+All **relational databases** are made up of separate tables that connect each other by using unique IDs.
+
+Observe the following tables:
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+
+name_table <- data_frame("Name" = c("Harshita", "Alex", "Fred", "Shannon", "Jamison", "Luis", "Kennedy"),
+                         "ID" = c("001", "002", "003", "004", "005", "006", "007"))
+
+cage_table <- data_frame("ID" = c("001", "002", "003", "004", "005", "006", "007"),
+                        "Cage Rating" = c(7, 6, 7, 1, 2, 7, 4))
+
+exam_table <- data_frame("ID" = c("001", "002", "003", "004", "005", "006", "007"),
+                         "Score" = c(96, 99, 97, NA, 41, 75, 79))
+```
+
+**Table A: Names & IDs**
+
+```{r warning=FALSE, message=FALSE, echo=FALSE}
+library(kableExtra)
+
+kable(name_table) %>%
+  kable_styling(bootstrap_options = "striped", 
+                font_size = 14, 
+                full_width = FALSE, 
+                position = "left")
+```
+
+**Table B: Likert Scale Responses on Nicholas Cage**
+
+```{r warning=FALSE, message=FALSE, echo=FALSE}
+library(kableExtra)
+
+kable(cage_table) %>%
+  kable_styling(bootstrap_options = "striped", 
+                font_size = 14, 
+                full_width = FALSE, 
+                position = "left")
+```
+
+**Table C: Civil Service Exam Scores**
+
+```{r warning=FALSE, message=FALSE, echo=FALSE}
+library(kableExtra)
+
+kable(exam_table) %>%
+  kable_styling(bootstrap_options = "striped", 
+                font_size = 14, 
+                full_width = FALSE, 
+                position = "left")
+```
+
+These tables demonstrate how relational databases function.
+
+In *Table A*, or `Cage Table`, Likert responses range from one to seven:
+
+* "7" indicates "strongly agree"
+* "1" indicates "stongly disagree"
+* Statement: "Nicholas Cage is the only actor to evolve the craft since Marlon Brando".
+
+However, we cannot yet determine the most vehement Cage fans, since `Cage Table` only contains ID numbers, not names.
+
+Hence, we must find a related table to better make sense of these data - specifically *Table A*.
+
+```{r}
+merged_tables <- left_join(name_table,
+                           cage_table, 
+                           by = "ID")     # Use one of dplyr's *_join() functions
+print(merged_tables)
+```
+
+Now that these tables are merged, we can determine who exactly recognized Nicholas Cage's genius.
+
+<br>
+
+## Relating More than One Table
+
+One need not stop at simply identifying Cage advocates by name. By relating additonal databases, we may:
+
+* Reveal additional information about observations or instances
+* Study the relationships between variables regardless of the individuals that connect the data
+
+Here, we merge *Table C* with the already merged *Table A* and *Table B* to create `master_table`.
+
+```{r message=FALSE, warning=FALSE}
+
+master_table <- left_join(merged_tables,
+                          exam_table, 
+                          by = "ID")
+
+print(master_table)
+```
+
+In sum, these databases are only relatable through the use of unique IDs.
+
+Ignoring the "who", we can study the relationship between variables. The following attempts to model civil service exam scores in relation to appreciation for Nicholas Cage's art.
+
+```{r warning=FALSE, message=FALSE}
+
+head(master_table)
+
+model <- lm(master_table$Score ~ master_table$`Cage Rating`)
+
+print(model)
+
+```
+
+Fascinating! There seems to be no significant relationship between utter devotion to Nicholas Cage and exam scores. Still, [be careful out there](http://tylervigen.com/view_correlation?id=359).
+
+<br>
+
+## SQL with "dplyr" Functions
+
+Interestingly, many functions we've seen in "dplyr" are the same functions in SQL:
+
+* `SELECT` is similar to `select()`
+* `INNER JOIN` and `OUTER JOIN`, are similar to `inner_join()` and `outer_join()`
+* `GROUP BY` is simialr to `group_by()`
+
+However, we do not need to learn SQL (though it is recommended) to use it. Instead we may use standard "dplyr" functions that:
+
+* Allow connecting and disconneting to databases
+* Read in only the values queried, allowing work with data too big for a single machine, even with parallel processing
+* Convert "dplyr" code into SQL or other native database languages
+
+<br>
+
+## Connecting to Databases
+
+The first step to querying data is to connect to a database. Consider the following:
+
+* Using SQL via "dplyr" requires additional packages, e.g. "dbplyr" and "RMySQL"
+* SQL comes in different flavors, so using the right function is critical
+    - `src_sqlite()` for *SQLite*
+    - `src_mysql()` for *MySQL* and *MariaDB*
+    - `src_postgres()` for *PostgreSQL*
+* Learn more about SQL and "dplyr" by typing the expression: `vignette("databases", packages = "dplyr")`
+
+First, we must install and load the "DBI" package, which helps R translate different languages like SQL. 
+
+```{r warning=FALSE, message=FALSE, echo=TRUE}
+
+if(!require(dbplyr)){install.packages("dbplyr")}     # Package "DBI" installed with "dbplyr"
+if(!require(RMySQL)){install.packages("RMySQL")}
+if(!require(RSQLite)){install.packages("RSQLite")}
+
+library(dbplyr)
+library(RMySQL)
+library(RSQLite)
+
+```
+
+The following uses a free practice SQL database, courtesy of [RStudio](https://db.rstudio.com/dplyr/).
+
+To learn more about these arguments, view package documentation with the expression: `?dbplyr`, or visit the package ["dbplyr" vignette](https://dbplyr.tidyverse.org/articles/dbplyr.html), which provides the following examples.
+
+In lieu of accessing a live SQL database, we may use `dbConnect()` to connect to our machine's internal memory.
+
+```{r eval=FALSE}
+
+library(dplyr)
+
+con <- DBI::dbConnect(RMySQL::RMySQL(), dbname = ":memory:")
+
+```
+
+<br>
+
+## Storing in Databases
+
+Connecting the local memory to simulate a practice database, we may store `nycflights13` using function `copy_to()`.
+
+```{r warning=FALSE, eval=FALSE}
+
+if(!require(nycflights13)){install.packages("nycflights13")}
+library(nycflights13)
+
+copy_to(con, nycflights13::flights, "flights",    # The vignette author emphasizes starting with the right indexing.
+  temporary = FALSE, 
+  indexes = list(
+    c("year", "month", "day"), 
+    "carrier", 
+    "tailnum",
+    "dest"
+  )
+)
+
+```
+
+<br>
+
+## Referencing Databases
+
+The database has no name, though. To reference it, use function `tbl()` and assignment, or `<-`.
+
+```{r warning=FALSE, eval=FALSE}
+
+flights_db <- tbl(con, "flights")
+
+```
+
+<br>
+
+## Querying Databases
+
+Now that you can reference `flights_db` by name, you can extract data from it like any other object in the environment. 
+
+```{r warning=FALSE, eval=FALSE}
+
+names(flights_db)
+class(flights_db)
+
+print(flights_db)
+
+```
+
+Note that "dplyr" functions that have equivalent functions in SQL are far more likely to operate as expected.
+
+However, "dbplyr" is optimized for `select()`, one of the most common tasks for analysts in generating SQL queries. 
+
+```{r eval=FALSE}
+
+flights_db %>%
+  select(year, month, day, carrier, air_time) %>%
+  group_by(carrier) %>%
+  summarize(total_at = sum(air_time))
+
+```
+
+<br>
+
+## Don't Neglect, Disconnect!
+
+When you've finished with your queries, don't forget to disconnect. As a courtesy, don't hog others' bandwidth.
+
+```{r eval=FALSE}
+dbDisconnect(conn = con)
+```
+
+<br>
+
+# Applied Practice
+
+**Preparation****:** Resimulate the `nycflights13` data if you disconnected during the previous section:
+
+```{r eval=FALSE}
+con <- DBI::dbConnect(RMySQL::RMySQL(), dbname = ":memory:")
+```
+
+```{r eval=FALSE}
+
+if(!require(dplyr)){install.packages("dplyr")}
+if(!require(nycflights13)){install.packages("nycflights13")}
+
+library(dplyr)
+library(nycflights13)
+
+con <- DBI::dbConnect(RMySQL::RMySQL(), dbname = ":memory:")
+
+copy_to(con, nycflights13::flights, "flights",    # The vignette author emphasizes starting with the right indexing.
+  temporary = FALSE, 
+  indexes = list(
+    c("year", "month", "day"), 
+    "carrier", 
+    "tailnum",
+    "dest"
+  )
+)
+
+flights_db <- tbl(con, "flights")
+
+```
+
+<br>
+
+**Instructions****:** Use "dplyr" functions with object `flights_db` to determine the following summary statistics.
+
+1. What are the mean departure delays, or `dep_delay`, when grouping by `carrier`.
+2. What is the maximum `distance` among trips when grouping by `month`?
+3. What is the mean and median `dep_delay` and `arr_delay` when grouping by `month`?
+4. **Bonus****:** What should you do once you've finished generating queries in a connected a database?
