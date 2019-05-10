@@ -1,0 +1,573 @@
+---
+title: 'Visualization with ggplot2: Part III'
+author: "Jamison R. Crawford, MPA"
+date: "May 10, 2019"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+---
+<style>
+body {
+text-align: justify}
+</style>
+
+<br>
+
+# Review
+
+**Base R Visualization.** For an introduction to data visualization in R, see [Visualization in Base R](http://rpubs.com/JamisonCrawford/graphics).
+
+**Introduction to ggplot2: Part I.** See [Visualization with ggplot2: Part I](http://rpubs.com/jamisoncrawford/ggplot2), which introduces:
+
+* The theoretical framework: "The Grammar of Graphics" (Wilkinson, 1999)
+* Elements of human language vs. elements of graphical language, or layers
+* "Data Ink" (**Aesthetics**) vs. "Non-Data Ink" (**Attributes**)
+* Essential elements of a `ggplot2` visualization
+
+**Introduction to ggplot2: Part II.** See [Visualization with ggplot2: Part II](http://rpubs.com/jamisoncrawford/ggplot22), which introduces:
+
+* Introduction to most common types of plots in the **Geometries layer**
+* Converting data classes to meet your visualization needs
+* Common pitfalls for common **geometries**
+* Implementing premade styles (**Themes**)
+
+<br>
+
+# Overview
+
+This is the final introductory session on R package `ggplot2`. We'll introduce:
+
+* Adjust scales and coordinates (the **Coordinates layer**)
+* Modifying scales, labels, and other "Non-Data Ink" for clarity
+* Create small multiples, i.e. trellis graphics (the **Facets layer**)
+* How to overlay **geometries** for greater insights
+
+<br>
+
+## Practice Data
+
+In this session, we'll use local public construction project records from:
+
+* Construction of 2015 Lakeview Amphitheater (Source: Onondaga County)
+* Renovation of 2018 Hancock International Airport (Source: Syracuse Regional Airport Authority)
+
+You can find these datasets and documentation in this [GitHub repository](https://github.com/jamisoncrawford/wealth). These are the same data gathered by Legal Services of Central New York (LSCNY) and scraped, analyzed, and visualized for Legal Services' and Urban Jobs Task Force's collaborative publication: ["Building Equity in the Construction Trades: A Racial Equity Impact Statement"](https://issuu.com/lscny/docs/reisfinal_3-8-19_compressed).
+
+<br>
+
+## Required Data & Packages
+
+Run the following code in R to install and load packages required for this session.
+
+* Package `readr` is used for importing and exporting data
+* Package `dplyr` is built around a grammar of data manipulation, inspired by SQL
+* Package `scales` allows one to easily format variables, e.g. percents and dollar amounts
+* Package `ggthemes`, introduced last session, expands the `ggplot2` library of preset themes
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+if(!require("readr")){install.packages("readr")}
+if(!require("dplyr")){install.packages("dplyr")}
+if(!require("scales")){install.packages("scales")}
+if(!require("ggplot2")){install.packages("ggplot2")}
+if(!require("ggthemes")){install.packages("ggthemes")}
+
+library(readr)
+library(dplyr)
+library(scales)
+library(ggplot2)
+library(ggthemes)
+
+```
+
+<br>
+
+Run the following code to read in (i.e. import) our practice data:
+
+* `hc` contains all scraped records for Hancock renovations
+* `lv` contains all scraped records for Lakeview renovations
+
+<br>
+
+```{r message=FALSE, warning=FALSE}
+
+url <- paste0("https://raw.githubusercontent.com/jamisoncrawford/",
+              "wealth/master/Tidy%20Data/hancock_lakeview_tidy.csv")   # URL containing data
+
+hc <- read_csv(file = url, 
+               col_types = "ccDcccddddccliii") %>%     # Abbreviations specifying data classes
+  filter(project == "Hancock")                         # Filters data for "Hancock" only
+
+lv <- read_csv(file = url, 
+               col_types = "ccDcccddddccliii") %>%     # Abbreviations specifying data classes
+  filter(project == "Lakeview")                        # Filters data for "Lakeview" only
+
+rm(url)                                                # Removes object `url`
+
+```
+
+<br>
+
+# Coordinates Layer
+
+Let's observe Hancock's worker `race` versus individual `gross` incomes per working `period`.
+
+We're using the three essential layers for any plot, plus one additional layer for clarity:
+
+* `ggplot()` calls the data required for the **data layer**
+* `aes()` specifies which variables for the **aesthetics layer**
+* `geom_jitter()` specifies a jittered scatter plot for the **geometries layer**
+* `theme_light()` isn't essential, but it modifies a preset theme
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,                            # Call data layer
+       aes(x = race, 
+           y = gross)) +              # Map variables in aesthetics layer
+  geom_jitter(width = 0.2, 
+              alpha = 0.3,
+              color = "tomato") +     # Specify geometry layer, with some attributes
+  theme_light()                       # Unessential: A preset theme for clarity
+
+```
+
+<br>
+
+## On Coordinates
+
+In general, the **Coordinates layer** follows a few rules:
+
+* All functions begin with `coord_`, type this in-console to view functions via autocomplete
+* Function `coord_cartesian()` is the most common and modifies a plot's Cartesian plane
+
+<br>
+
+## Flipping Coordinates
+
+No, we're not politely cursing our coordinates.
+
+Instead, we swap the x- and y-axes, which is a best practice when using categorical variables. Why?
+
+* With many levels, categorical variables can crowd one another.
+* Laypersons tend to read charts from left to right, starting in the upper-left and working down.
+* In other words, general audiences will read a chart like text, in a "Z" pattern.
+
+We can use function `ccord_flip()` to achieve this. Note that `x =` and `y=` arguments are reversed.
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,
+       aes(x = race, 
+           y = gross)) +
+  geom_jitter(width = 0.2, 
+              alpha = 0.3,
+              color = "tomato") +
+  coord_flip() +                      # Swap x- and y-axes with `coord_flip()`
+  theme_light()
+
+```
+
+<br>
+
+## Cartesian Planes
+
+We can "zoom in" on a part of our plot with function `coord_cartesian()`:
+
+* Here, we'll view two continuous variables, `gross` and `net` income
+* Surprisingly, these can differ since `net` includes income from other projects
+* We add a Loess regression curve to show association using `geom_smooth()`
+    - LOESS: Locally estimated scatterplot smoothing ([Wikipedia](https://en.wikipedia.org/wiki/Local_regression))
+* First, view the plot without `coord_cartesian()`
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,
+       aes(x = net,          # Note the substitution of `race` for `net`
+           y = gross)) +
+  geom_point() +             # We don't need jitter and use `geom_pont()`
+  geom_smooth() +            # By default, this plots a Loess curve and standard error
+  theme_light()
+
+```
+
+<br>
+
+Now, we'll use `coord_cartesian()` to specify where we'd like to "zoom in".
+
+* Here, we specify the minimum and maximum zoom limits with concatenate, or `c()`
+* We set the x-axis range with `xlim =` and y-axis range with `ylim =`
+* Note that "zooming in" does not eliminate the other data points!
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,
+       aes(x = net,
+           y = gross)) +
+  geom_point() +
+  geom_smooth() +
+  coord_cartesian(xlim = c(0, 1000),       # We may specify limits for one or both axes
+                  ylim = c(0, 2000)) +     # The range of limits in `c()` can differ
+  theme_light()
+
+```
+
+<br>
+
+## Filtering Planes
+
+While `coord_cartesian()` allows one to "zoom in", limit functions will "filter" unseen data.
+
+* Function `xlim()` with argument `x =` controls the x-axis limits
+* Function `ylim()` with argument `y =` controls the y-axis limits
+* Function `lims()` accepts both `x =` and `y =` arguments
+* Remember to provided a minimum and maximum value in `c()`
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,
+       aes(x = net,
+           y = gross)) +
+  geom_point() +
+  geom_smooth() +
+  lims(x = c(0, 1000),
+       y = c(0, 2000)) +     # Alternatively: xlim(c(0, 1000)) + ylim(c(0, 2000))
+  theme_light()
+
+```
+
+<br>
+
+**Questions.** Why has the Loess curve changed? Why has the standard error changed?
+
+<br>
+
+## Scales
+
+Modifying the **scales** of the x- and y-axes requires you to follow a few rules, as well:
+
+* All functions modifying scales being with `scale_`; explore with autocomplete
+* You must specify the axis to modify, e.g. `scale_x_` or `scale_y_`
+* You must also specify the type of variable in the function call
+    - For example, if categorical e.g., use `scale_x_discrete()`
+    - Conversely, if continuous e.g., use `scale_y_continuous()`
+* The following modifies x- and y-axes labels, or `labels =`
+    
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,
+       aes(x = net,
+           y = gross)) +
+  geom_point() +
+  geom_smooth() +
+  scale_x_continuous(name = "Unique Net Payments") +       # Specify continuous x-axis
+  scale_y_continuous(name = "Unique Gross Payments") +     # Specify continuous y-axis
+  theme_light()
+
+```
+
+<br>
+
+**Labels.** Above, we've simply modifed the axes labels with argument `name =`.
+
+We can use R package `scales` to easily format the data labels, which may:
+
+* Add comma separators for values of 1,000 or more (`label = "comma"`)
+* Convert to dollars (`labels = dollar`) or percents (`labels = percent`)
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+library(scales)
+
+ggplot(hc,
+       aes(x = net,
+           y = gross)) +
+  geom_point() +
+  geom_smooth() +
+  scale_x_continuous(name = "Unique Net Payments",
+                     labels = dollar) +             # `scales` makes formatting easy!
+  scale_y_continuous(name = "Unique Gross Payments",
+                     labels = dollar) +
+  theme_light()
+
+```
+
+<br>
+
+**Breaks.** We can also format **breaks** along each axis, i.e. labels every $500, or every $1K.
+
+* These breaks are numeric and so do not require quotiation marks
+* Specify breaks using the argument `breaks =`
+* Individual breaks are concatenated in `c()`
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+library(scales)
+
+ggplot(hc,
+       aes(x = net,
+           y = gross)) +
+  geom_point() +
+  geom_smooth() +
+  scale_x_continuous(name = "Unique Net Payments",
+                     labels = dollar, 
+                     breaks = c(0, 500, 1000, 1500, 2000, 2500)) +     # Custom breaks
+  scale_y_continuous(name = "Unique Gross Payments",
+                     labels = dollar,
+                     breaks = c(0, 500, 1000, 1500, 2000, 2500, 3000, 3500)) +
+  theme_light()
+
+```
+
+<br>
+
+**Repeating Breaks.** We don't need to type out each "break" value by using package `scales`:
+
+* Function `pretty_breaks()` from `scales` allows easy, incremental break formatting
+* Argument `n =` specifies the numebr of equal breaks
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+library(scales)
+
+ggplot(hc,
+       aes(x = net,
+           y = gross)) +
+  geom_point() +
+  geom_smooth() +
+  scale_x_continuous(name = "Unique Net Payments",
+                     labels = dollar, 
+                     breaks = pretty_breaks(n = 6)) +     # Pretty breaks
+  scale_y_continuous(name = "Unique Gross Payments",
+                     labels = dollar,
+                     breaks = pretty_breaks(n = 8)) +
+  theme_light()
+
+```
+
+<br>
+
+**Custom Labels.** We don't have to use package `scales`, though it helps. Instead:
+
+* We can create x- and y-axis labels that use non-data ink more parsimoniously
+* This allows audiences to spend more time focusing on the data
+* However, we need to provide sufficient context with some "data ink"
+* The number of unique labels **must match** number of breaks!
+* Here, by incuding "$", we need not include "USD" in labels
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,
+       aes(x = net,
+           y = gross)) +
+  geom_point() +
+  geom_smooth() +
+  scale_x_continuous(name = "Unique Net Payments",
+                     labels = c("$ 0", "0.5", "1.0", "1.5", "2.0", "2.5 K"),
+                     breaks = c(0, 500, 1000, 1500, 2000, 2500)) +
+  scale_y_continuous(name = "Unique Gross Payments",
+                     labels = c("$ 0", "0.5", "1.0", "1.5", "2.0", "2.5", "3 K"),
+                     breaks = c(0, 500, 1000, 1500, 2000, 2500, 3000)) +
+  theme_light()
+
+```
+
+<br>
+
+# Faceting
+
+[Small multiples](https://en.wikipedia.org/wiki/Small_multiple) allow us to compare different groups of data using the same scales.
+
+* Also known as faceting or trellis graphics, this is the **Facets layer**
+* All faceting functions begin with `facet_`; peruse faceting with autocomplete
+* Typically, functions `facet_grid()` and `facet_wrap()` are most common
+    - `facet_grid()` aligns small multiples horizontally along one shared y-axis
+    - `facet_wrap()` structures small multiples tabularly, in rows and columns
+* Facet functions accept a formula with bare variable names, e.g. `class ~ race`
+    - If you prefer to facet by one variable, leave one side empty, or use `.`
+    - The lefthand-side specifies faceting rows, and RHS specifies columns
+    
+Let's try `facet_grid()` first with formula `~ race`, faceting on `race` alone:
+    
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,
+       aes(x = net,
+           y = gross)) +
+  geom_point() +
+  geom_smooth(method = "lm") +                           # Linear model, not Loess
+  scale_x_continuous(name = "Unique Net Payments",
+                     labels = c("$0", "1", "2 K", "")) +
+  scale_y_continuous(name = "Unique Gross Payments",
+                     labels = dollar) +
+  facet_grid( ~ race) +                                  # Use a single y-axis scale 
+  theme_light() 
+
+```
+
+<br>
+
+Now let's give `facet_wrap()` a try with the same formula:
+
+* This tends to work better when faceting by 5 or more groups
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,
+       aes(x = net,
+           y = gross)) +
+  geom_point() +
+  geom_smooth(method = "lm") +                           # Linear model, not Loess
+  scale_x_continuous(name = "Unique Net Payments",
+                     labels = c("$0", "1", "2 K", "")) +
+  scale_y_continuous(name = "Unique Gross Payments",
+                     labels = dollar) +
+  facet_wrap( ~ race) +                                  # Use a tabular format 
+  theme_light() 
+
+```
+
+<br>
+
+There are several arguments for faceting functions, though usually you only need a formula.
+
+<br>
+
+# Labels
+
+Labeling is also fairly straightforward and usually contain `lab` in the function name:
+
+* Function `labs()` is a catch-all for multiple labels
+* You can modify labels elsehow, e.g. in `scale_x_continuous()`
+* Alternatively, individual functions exist for modifying each label:
+    - `ggtitle()` modifies the plot title
+    - `xlab()` modifies the x-axis title
+    - `ylab()` modifies the y-axis title
+    - Etc.
+    
+Most conveniently, you can modify all labels in the `labs()` function using arguments:
+
+* `title =` for plot title
+* `subtitle = ` for plot subtitle
+* `x =` for x-axis title
+* `y =` for y-axis title
+* `caption =` for listing sources
+* `fill = `, `color =`, or other aesthetics for legend titles
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,
+       aes(x = net,
+           y = gross)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_x_continuous(labels = dollar) +
+  scale_y_continuous(labels = dollar) +
+  facet_wrap( ~ race) +
+  labs(title = "Gross vs. Net payments by ethnicity",                 # Labels in fell swoop
+       subtitle = "2018 Hancock Airport Renovations",
+       x = "Unique Net Payments",
+       y = "Unique Gross Payments",
+       caption = "Source: Syracuse Regional Airport Authority") +
+  theme_light() 
+
+```
+
+<br>
+
+# Plot Overlays
+
+**Overlay** plots by adding new `geom_*()` and `aes()` functions and arguments appropriately.
+
+* Here, we'll go back to our `geom_jitter()` plot with `gross` income and `race`
+* If you're using new data for your overlay, specify it in the `geom_*()` call
+* If you're using new variables, or differently named variables, specify in `aes()`
+
+<br>
+
+```{r warning=FALSE, message=FALSE}
+
+ggplot(hc,
+       aes(x = race,
+           y = gross)) +
+  geom_boxplot(width = 0.55,
+               color = "grey55") +
+  geom_jitter(width = 0.2,
+              alpha = 0.3,
+              color = "tomato") +
+  coord_flip() +
+  scale_y_continuous(labels = dollar) +
+  labs(title = "Gross payments by ethnicity",
+       subtitle = "2018 Hancock Airport Renovations",
+       x = "Ethnicity",
+       y = "Unique Gross Payments",
+       caption = "Source: Syracuse Regional Airport Authority") +
+  theme_light() 
+
+```
+
+<br>
+
+# Applied Practice
+
+Instead of dataset `hc`, for Hancock data, replicate the above plots with Lakeview data, `lv`. Recommendations are provided below, but feel free to experiment. Make sure to:
+
+* Call dataset `lv` in your data layer, `ggplot()`
+* Use the same variable, which you can view with `names(lv)`
+* Label your titles, subtitles, axes, legends, and captions appropriately
+* Format your scales approrpiately, if dollars, percents, etc.
+* Use non-data ink parsimoniously and for clarity
+
+<br>
+
+Suggested plots:
+
+1. A `geom_jitter()` plot with `race` by `gross`
+2. A faceted `geom_point()` plot with `geom_smooth()` using `gross` by `net`
+3. A `geom_bar()` plot with argument `stat = "identity"` in the geometry layer
+    - Use `fill = race` in the `aes()` function call
+    
+<br>
+
+# Acknowledgments
+
+Thanks for sticking it out with me throughout this introductory series to the R language.
+
+With grit and determination, which you've already shown, these fundamentals will be a robust foundation, without pretense to architecture, on which to build your future data science skills. We've only scratched the surface - tooth and nail, of course - but such is the nature of any aspiring hacker. Keep it up.
+
+In the words of Benjamin Franklin:
+
+> "Industry need not wish".
